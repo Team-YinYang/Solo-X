@@ -13,8 +13,10 @@ pub const AUTHORITY_SEED: &[u8] = b"authority";
 
 /// Official test-USDC mint on Solana devnet. Local validators clone this account
 /// for integration testing; production collateral configuration is out of scope.
-pub const DEVNET_TEST_USDC_MINT: Pubkey =
-    anchor_lang::solana_program::pubkey!("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+pub const DEVNET_TEST_USDC_MINT: Pubkey = Pubkey::new_from_array([
+    59, 68, 44, 179, 145, 33, 87, 241, 58, 147, 61, 1, 52, 40, 45, 3, 43, 95, 254, 205, 1, 162,
+    219, 241, 183, 121, 6, 8, 223, 0, 46, 167,
+]);
 
 pub fn is_supported_collateral_mint(mint: &Pubkey) -> bool {
     *mint == DEVNET_TEST_USDC_MINT
@@ -163,6 +165,20 @@ pub enum CurrencyError {
     InvalidVaultDelegate,
     #[msg("Vault close authority is not allowed")]
     InvalidVaultCloseAuthority,
+    #[msg("Redeeming zero tokens is not allowed")]
+    ZeroAmount,
+    #[msg("Holder does not own the supplied token account")]
+    InvalidHolder,
+    #[msg("Holder has insufficient issued tokens")]
+    InsufficientHolderBalance,
+    #[msg("Issued mint has insufficient outstanding supply")]
+    InsufficientSupply,
+    #[msg("Collateral vault has insufficient funds")]
+    InsufficientReserves,
+    #[msg("Currency collateral balance is below outstanding supply")]
+    UnderCollateralized,
+    #[msg("Arithmetic overflow during redemption")]
+    ArithmeticOverflow,
 }
 
 #[cfg(test)]
