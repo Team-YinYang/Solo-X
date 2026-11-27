@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, fix/issue-25-safe-transaction-review-orenyi]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
