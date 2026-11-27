@@ -1,9 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Burn, Mint, MintTo, Token, TokenAccount, TransferChecked};
 
-use crate::state::{
-    validate_collateral, CurrencyState, AUTHORITY_SEED, CURRENCY_DECIMALS,
-};
+use crate::state::{validate_collateral, CurrencyState, AUTHORITY_SEED, CURRENCY_DECIMALS};
 
 #[derive(Accounts)]
 pub struct ConvertCurrency<'info> {
