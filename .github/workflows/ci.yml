@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, test/issue-15-adversarial-invariants-orenyi]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
