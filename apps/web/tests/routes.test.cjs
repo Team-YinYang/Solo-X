@@ -11,10 +11,12 @@ test("landing page links to workspace", () => {
   assert.match(source, /Enter workspace/);
 });
 
-test("workspace includes a wallet panel and indicates transactions are disabled", () => {
+test("workspace contains wallet and devnet mint/redeem panels", () => {
   const source = fs.readFileSync(path.join(app, "app/workspace/page.tsx"), "utf8");
   assert.match(source, /WalletPanel/);
-  assert.match(source, /Protocol transactions remain disabled/);
+  assert.match(source, /MintRedeemPanel/);
+  assert.match(source, /Devnet and local validator only/);
+  assert.match(source, /Mint and redeem using test funds only/);
 });
 
 test("wallet panel is restricted to test networks and handles rejected signatures", () => {
