@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    name: Rust / Anchor
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Discover Rust workspace
+        id: rust
+        shell: bash
+        run: |
+          if [ -f Cargo.toml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Cargo.toml is not present yet (foundation issue #1). Rust checks will start as soon as it is added."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.rust.outputs.present == 'true'
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        if: steps.rust.outputs.present == 'true'
+      - name: Format
+        if: steps.rust.outputs.present == 'true'
+        run: cargo fmt --all -- --check
+      - name: Lint
+        if: steps.rust.outputs.present == 'true'
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Build
+        if: steps.rust.outputs.present == 'true'
+        run: cargo build --workspace --locked
+      - name: Test
+        if: steps.rust.outputs.present == 'true'
+        run: cargo test --workspace --locked
+
+  typescript:
+    name: TypeScript / Workspace
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Discover TypeScript workspace
+        id: ts
+        shell: bash
+        run: |
+          if [ -f package.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::package.json is not present yet (foundation issue #2). TypeScript checks will start as soon as it is added."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.ts.outputs.present == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Validate scripts and lockfile
+        if: steps.ts.outputs.present == 'true'
+        shell: bash
+        run: |
+          node .github/scripts/check-ts-workspace.cjs
+      - name: Install dependencies
+        if: steps.ts.outputs.present == 'true'
+        run: npm ci
+      - name: Lint
+        if: steps.ts.outputs.present == 'true'
+        run: npm run lint --workspaces --if-present
+      - name: Typecheck
+        if: steps.ts.outputs.present == 'true'
+        run: npm run typecheck --workspaces --if-present
+      - name: Build
+        if: steps.ts.outputs.present == 'true'
+        run: npm run build --workspaces --if-present
+      - name: Test
+        if: steps.ts.outputs.present == 'true'
+        run: npm run test --workspaces --if-present
+
+  ci-config:
+    name: CI configuration smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test TypeScript workspace validator
+        run: node --test .github/scripts/check-ts-workspace.test.cjs
