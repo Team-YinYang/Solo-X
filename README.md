@@ -116,7 +116,7 @@ cd Solo-X
 
 The Anchor workspace is ready for local development. Follow the [local setup guide](docs/SETUP.md) to install the pinned toolchain, start a validator and run the smoke test.
 
-The Next.js/SDK workspaces are scaffolded in `apps/web` and `packages/sdk`. With Node 22 and npm 10, run `npm ci`, `npm run dev`, `npm run lint`, `npm run typecheck`, `npm run build`, and `npm run test`. See [web and SDK setup](docs/WEB_SDK.md). Wallet connections and protocol transactions are not implemented in this foundation preview. See [ROADMAP.md](ROADMAP.md) for milestones.
+The Next.js/SDK workspaces are scaffolded in `apps/web` and `packages/sdk`. With Node 22 and npm 10, run `npm ci`, `npm run dev`, `npm run lint`, `npm run typecheck`, `npm run build`, and `npm run test`. See [web and SDK setup](docs/WEB_SDK.md) and [wallet connection](docs/WALLET.md). The wallet panel is limited to proof-of-ownership on devnet or localnet; protocol transactions are not yet implemented. See [ROADMAP.md](ROADMAP.md) for milestones.
 
 ## Proposed technology stack
 
@@ -153,6 +153,7 @@ The Next.js/SDK workspaces are scaffolded in `apps/web` and `packages/sdk`. With
 - [Local setup](docs/SETUP.md)
 - [Currency initialization](docs/CURRENCY_INITIALIZATION.md)
 - [Collateral-backed minting](docs/MINTING.md)
+- [Wallet connection](docs/WALLET.md)
 
 Claim an issue, work on a feature branch and submit a reviewed pull request with tests. Setup commands will be added after scaffolding.
 

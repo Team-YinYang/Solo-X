@@ -11,10 +11,19 @@ test("landing page links to workspace", () => {
   assert.match(source, /Enter workspace/);
 });
 
-test("workspace indicates there are no live transactions", () => {
+test("workspace includes a wallet panel and indicates transactions are disabled", () => {
   const source = fs.readFileSync(path.join(app, "app/workspace/page.tsx"), "utf8");
-  assert.match(source, /Transactions are not enabled/);
-  assert.match(source, /No wallet connection/);
+  assert.match(source, /WalletPanel/);
+  assert.match(source, /Protocol transactions remain disabled/);
+});
+
+test("wallet panel is restricted to test networks and handles rejected signatures", () => {
+  const source = fs.readFileSync(path.join(app, "components/wallet-panel.tsx"), "utf8");
+  assert.match(source, /https:\/\/api\.devnet\.solana\.com/);
+  assert.match(source, /network !== "devnet" && network !== "localnet"/);
+  assert.match(source, /Wallet connection was cancelled or rejected/);
+  assert.match(source, /Signature was cancelled or rejected/);
+  assert.match(source, /Disconnect/);
 });
 
 test("environment example contains only public devnet configuration", () => {
