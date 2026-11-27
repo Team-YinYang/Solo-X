@@ -8,3 +8,39 @@ export type {
   SoloXNetwork,
   SoloXRpcConfig,
 } from "./network.js";
+
+export {
+  SOLO_X_DECIMALS,
+  SOLO_X_PROGRAM_ID,
+  SOLO_X_TOKEN_PROGRAM_ID,
+  SOLO_X_SYSTEM_PROGRAM_ID,
+  SOLO_X_TEST_USDC_MINT,
+  MAX_U64,
+  SoloXSdkError,
+  deriveSoloXCurrencyAddresses,
+  parseSoloXAmount,
+  buildCreateCurrency,
+  buildMintCurrency,
+  buildRedeemCurrency,
+  buildConvertCurrency,
+  decodeSoloXCurrencyState,
+  readSoloXReserves,
+} from "./transactions.js";
+
+export type {
+  SoloXInstructionName,
+  SoloXAccountMap,
+  SoloXAccountMeta,
+  SoloXInstruction,
+  CreateCurrencyAccounts,
+  MintCurrencyAccounts,
+  RedeemCurrencyAccounts,
+  ConvertCurrencyAccounts,
+  BuildSoloXOptions,
+  SoloXPdaResolver,
+  SoloXCurrencyAddresses,
+  SoloXRpcAccount,
+  SoloXReadClient,
+  SoloXCurrencyState,
+  SoloXReserveSnapshot,
+} from "./transactions.js";
