@@ -44,3 +44,6 @@ export type {
   SoloXCurrencyState,
   SoloXReserveSnapshot,
 } from "./transactions.js";
+
+export { parseSoloXDecimalAmount, simulateSoloXTransaction, SoloXSimulationError } from "./preflight.js";
+export type { SoloXSimulationClient, SoloXSimulationResult } from "./preflight.js";

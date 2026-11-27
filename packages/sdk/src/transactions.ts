@@ -125,6 +125,7 @@ function checkCollateral(accounts: { readonly collateralMint: string }): void {
   if (accounts.collateralMint !== SOLO_X_TEST_USDC_MINT) throw new SoloXSdkError("UNSUPPORTED_COLLATERAL", "MVP supports only the configured devnet test-USDC mint");
 }
 function build<T extends string>(name: SoloXInstructionName, accounts: SoloXAccountMap<T>, order: readonly T[], signerKeys: readonly T[], writableKeys: readonly T[], amount?: bigint, options: BuildSoloXOptions = {}): SoloXInstruction<T> {
+  if (name !== "createCurrency") parseSoloXAmount(amount as bigint);
   const data = instructionData(name, amount);
   const programId = options.programId ?? SOLO_X_PROGRAM_ID;
   decodeAddress(programId);
