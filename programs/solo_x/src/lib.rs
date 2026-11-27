@@ -92,7 +92,6 @@ pub mod solo_x {
 
         Ok(())
     }
-
 }
 
 #[derive(Accounts)]
@@ -206,7 +205,10 @@ pub struct RedeemCurrency<'info> {
 /// restores the burn and the collateral balances.
 fn check_redemption(amount: u64, holder_balance: u64, supply: u64, reserves: u64) -> Result<()> {
     require!(amount > 0, CurrencyError::ZeroAmount);
-    require!(holder_balance >= amount, CurrencyError::InsufficientHolderBalance);
+    require!(
+        holder_balance >= amount,
+        CurrencyError::InsufficientHolderBalance
+    );
     require!(supply >= amount, CurrencyError::InsufficientSupply);
     require!(reserves >= amount, CurrencyError::InsufficientReserves);
     // Never allow redemption on an already undercollateralized currency.
@@ -217,7 +219,10 @@ fn check_redemption(amount: u64, holder_balance: u64, supply: u64, reserves: u64
     let remaining_reserves = reserves
         .checked_sub(amount)
         .ok_or(error!(CurrencyError::ArithmeticOverflow))?;
-    require!(remaining_reserves >= remaining_supply, CurrencyError::UnderCollateralized);
+    require!(
+        remaining_reserves >= remaining_supply,
+        CurrencyError::UnderCollateralized
+    );
     Ok(())
 }
 
