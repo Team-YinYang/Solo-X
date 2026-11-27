@@ -36,7 +36,8 @@ test("workspace includes conversion, transfer, and RPC reserve transparency tool
   assert.match(workspace, /ConversionTransferPanel/);
   assert.match(workspace, /ReserveDashboard/);
   assert.match(operations, /Convert compatible currency/);
-  assert.match(operations, /Transaction failed on chain; all state changes were rolled back/);
+  assert.match(operations, /TransactionReview/);
+  assert.match(operations, /flow\.recheck\(\)/);
   assert.match(dashboard, /Reserve ratio/);
   assert.match(dashboard, /Mint in explorer/);
 });
@@ -56,7 +57,9 @@ test("environment example contains only public devnet configuration", () => {
   assert.doesNotMatch(env, /PRIVATE_KEY|SECRET_KEY|SEED_PHRASE/i);
 });
 
-test("creation requires consent, wallet signatures, preflight and confirmation", () => {
+test("currency creation requires consent, prepared wallet review and confirmed submission", () => {
   const source = fs.readFileSync(path.join(app, "components/create-currency-panel.tsx"), "utf8");
-  for (const pattern of [/!accepted/, /verifiedConnection/, /partialSign\(issued\)/, /wallet.signTransaction/, /skipPreflight: false/, /confirmTransaction/, /result.value.err/, /cluster=devnet/]) assert.match(source, pattern);
+  const review = fs.readFileSync(path.join(app, "components/transaction-review.tsx"), "utf8");
+  for (const pattern of [/!accepted/, /verifiedConnection/, /partialSign\(issued\)/, /TransactionReview/, /flow\.approve\(\)/, /flow\.recheck\(\)/, /cluster=devnet/]) assert.match(source, pattern);
+  for (const pattern of [/wallet.signTransaction/, /skipPreflight: false/, /confirmTransaction/, /result.value.err/, /signedSignature/]) assert.match(review, pattern);
 });

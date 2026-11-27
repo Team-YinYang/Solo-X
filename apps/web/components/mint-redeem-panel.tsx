@@ -1,68 +1,78 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { parseAmount, formatAmount } from "./amount";
 import { buildTransaction, loadAccounts, verifiedConnection, type Operation } from "./currency-transactions";
+import { TransactionReview, useSafeTransaction } from "./transaction-review";
 
 export function MintRedeemPanel() {
   const [mint, setMint] = useState("");
   const [amount, setAmount] = useState("");
   const [operation, setOperation] = useState<Operation>("mint");
   const [balances, setBalances] = useState("");
-  const [message, setMessage] = useState("");
-  const [busy, setBusy] = useState(false);
-  const lock = useRef(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const flow = useSafeTransaction();
+  const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet";
 
-  async function run(submit: boolean) {
-    if (lock.current) return;
-    lock.current = true;
-    setBusy(true);
-    setMessage("");
-    setBalances("");
-    let signature: string | undefined;
-    let confirmed = false;
+  async function refresh() {
+    if (flow.blocked || refreshing) return;
+    setRefreshing(true); setBalances("");
     try {
-      const wallet = window.solana as (typeof window.solana & { signTransaction?: (transaction: Transaction) => Promise<Transaction> });
+      const wallet = window.solana;
       if (!wallet?.publicKey) throw new Error("Connect your test wallet first.");
       const holder = new PublicKey(wallet.publicKey.toBase58());
       const issued = new PublicKey(mint.trim());
       const connection = await verifiedConnection();
-      if (submit) {
-        if (!wallet.signTransaction) throw new Error("Wallet does not support transaction signing.");
-        const units = parseAmount(amount);
-        const {transaction, block} = await buildTransaction(connection, holder, issued, operation, units);
-        if (wallet.publicKey?.toBase58() !== holder.toBase58()) throw new Error("Wallet changed. Refresh and try again.");
-        const signed = await wallet.signTransaction(transaction);
-        signature = await connection.sendRawTransaction(signed.serialize(), {skipPreflight:false});
-        const result = await connection.confirmTransaction({...block, signature}, "confirmed");
-        if (result.value.err) throw new Error("Transaction failed on chain.");
-        confirmed = true;
-        setAmount("");
-        setMessage("Confirmed: " + signature);
-      }
       const a = await loadAccounts(connection, holder, issued);
       setBalances("Issued: " + formatAmount(a.issuedAccount.balance) + " | Test USDC: " + formatAmount(a.collateralAccount.balance));
     } catch (error) {
-      const detail = error instanceof Error ? error.message : "Unexpected transaction error.";
-      setMessage(confirmed ? "Confirmed: " + signature + ". Balance refresh failed: " + detail : signature ? "Transaction submitted: " + signature + ". Check its status before retrying. " + detail : detail);
-    } finally {
-      lock.current = false;
-      setBusy(false);
-    }
+      flow.setMessage(error instanceof Error ? error.message : "Balance refresh failed.");
+    } finally { setRefreshing(false); }
+  }
+
+  async function prepare() {
+    const wallet = window.solana as (typeof window.solana & { signTransaction?: (transaction: Transaction) => Promise<Transaction> });
+    if (!wallet?.publicKey || !wallet.signTransaction) throw new Error("Connect a wallet that supports signing.");
+    const holder = new PublicKey(wallet.publicKey.toBase58());
+    const issued = new PublicKey(mint.trim());
+    const units = parseAmount(amount);
+    const connection = await verifiedConnection();
+    const { transaction, block } = await buildTransaction(connection, holder, issued, operation, units);
+    return {
+      connection, block, transaction, wallet, walletAddress: holder.toBase58(),
+      review: {
+        action: operation === "mint" ? "Deposit test USDC and mint" : "Burn issued tokens and redeem test USDC",
+        network,
+        wallet: holder.toBase58(),
+        sourceMint: operation === "mint" ? "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU" : issued.toBase58(),
+        destination: operation === "mint" ? issued.toBase58() : "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        amount: amount + " tokens (six decimals)",
+        details: "Review token addresses and wallet network. Test funds only.",
+      },
+      afterConfirmed: async () => {
+        setAmount("");
+        const a = await loadAccounts(connection, holder, issued);
+        setBalances("Issued: " + formatAmount(a.issuedAccount.balance) + " | Test USDC: " + formatAmount(a.collateralAccount.balance));
+      },
+    };
   }
 
   return <article className="module">
     <h2>Mint &amp; redeem</h2>
     <p>Exchange test USDC and issued tokens at 1:1. Existing token accounts are required.</p>
-    <form onSubmit={(event) => {event.preventDefault(); void run(true);}}>
-      <label>Issued mint address <input required value={mint} disabled={busy} onChange={(event) => {setMint(event.target.value); setBalances("");}} /></label>
-      <label>Operation <select value={operation} disabled={busy} onChange={(event) => setOperation(event.target.value as Operation)}><option value="mint">Mint</option><option value="redeem">Redeem</option></select></label>
-      <label>Amount <input required inputMode="decimal" value={amount} disabled={busy} onChange={(event) => setAmount(event.target.value)} /></label>
-      <button type="button" className="wallet-button secondary" disabled={busy || !mint} onClick={() => void run(false)}>Refresh balances</button>
-      <button type="submit" className="wallet-button" disabled={busy || !mint || !amount}>{busy ? "Working…" : operation === "mint" ? "Deposit and mint" : "Burn and redeem"}</button>
+    <form onSubmit={(event) => { event.preventDefault(); void flow.start(prepare); }}>
+      <label>Issued mint address <input required value={mint} disabled={flow.blocked || refreshing} onChange={(event) => { setMint(event.target.value); setBalances(""); }} /></label>
+      <label>Operation <select value={operation} disabled={flow.blocked || refreshing} onChange={(event) => setOperation(event.target.value as Operation)}><option value="mint">Mint</option><option value="redeem">Redeem</option></select></label>
+      <label>Amount <input required inputMode="decimal" value={amount} disabled={flow.blocked || refreshing} onChange={(event) => setAmount(event.target.value)} /></label>
+      <button type="button" className="wallet-button secondary" disabled={flow.blocked || refreshing || !mint} onClick={() => void refresh()}>Refresh balances</button>
+      <button type="submit" className="wallet-button" disabled={flow.blocked || refreshing || !mint || !amount}>{flow.busy ? "Working…" : "Review transaction"}</button>
     </form>
+    {flow.review && <TransactionReview review={flow.review} busy={flow.busy} onApprove={() => void flow.approve()} onCancel={flow.cancel} />}
+    {flow.pending && <p role="alert">Transaction {flow.pending} is unresolved. Do not submit another transaction.
+      <button type="button" className="wallet-button secondary" disabled={flow.busy} onClick={() => void flow.recheck()}>Recheck on-chain status</button>
+    </p>}
     {balances && <p role="status">{balances}</p>}
-    {message && <p role="status">{message}</p>}
+    {flow.message && <p role="status">{flow.message}</p>}
   </article>;
 }
