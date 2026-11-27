@@ -67,7 +67,7 @@ export default function HomePage() {
       </section>
 
       <footer className="footer">
-        <span>Built by Team YinYang · Solana devnet</span>
+        <span>Built by Team YinYang · Powered by Solana</span>
         <span>Foundation preview · Not audited · No real funds</span>
       </footer>
     </main>

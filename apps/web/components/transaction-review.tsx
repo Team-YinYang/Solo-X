@@ -5,7 +5,7 @@ import type { BlockhashWithExpiryBlockHeight, Connection, Transaction } from "@s
 import { reconcileTransaction, signedSignature } from "./transaction-status";
 
 type Signer = {
-  publicKey?: { toBase58: () => string };
+  publicKey?: { toBase58: () => string } | null;
   signTransaction?: (transaction: Transaction) => Promise<Transaction>;
 };
 

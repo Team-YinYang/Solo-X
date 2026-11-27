@@ -7,6 +7,12 @@ const TOKEN = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 const COLLATERAL = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
 export type Operation = "mint" | "redeem";
 
+export function networkDisplayName() {
+  return process.env.NEXT_PUBLIC_SOLANA_NETWORK === "localnet"
+    ? "Local validator"
+    : "Solana test network";
+}
+
 export async function verifiedConnection() {
   const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet";
   const url = process.env.NEXT_PUBLIC_SOLANA_RPC_URL ?? "https://api.devnet.solana.com";

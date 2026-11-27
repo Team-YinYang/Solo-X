@@ -13,22 +13,25 @@ test("landing page links to workspace", () => {
   assert.equal(fs.existsSync(path.join(app, "public", "solo-x-logo.png")), true);
 });
 
-test("workspace includes wallet, creation, and test-only minting panels", () => {
+test("workspace includes compact wallet, creation, and minting panels", () => {
   const source = fs.readFileSync(path.join(app, "app/workspace/page.tsx"), "utf8");
   assert.match(source, /WalletPanel/);
   assert.match(source, /CreateCurrencyPanel/);
   assert.match(source, /MintRedeemPanel/);
-  assert.match(source, /Devnet and local validator only/);
-  assert.match(source, /Mint and redeem using test funds only/);
+  assert.match(source, /<WalletPanel \/>/);
+  assert.match(source, /Test network and local validator only/);
+  assert.doesNotMatch(source, /id="wallet"/);
 });
 
-test("wallet panel is restricted to test networks and handles rejected signatures", () => {
+test("wallet control uses wallet-standard discovery and exposes address and disconnect states", () => {
   const source = fs.readFileSync(path.join(app, "components/wallet-panel.tsx"), "utf8");
-  assert.match(source, /https:\/\/api\.devnet\.solana\.com/);
-  assert.match(source, /network !== "devnet" && network !== "localnet"/);
-  assert.match(source, /Wallet connection was cancelled or rejected/);
-  assert.match(source, /Signature was cancelled or rejected/);
-  assert.match(source, /Disconnect/);
+  const providers = fs.readFileSync(path.join(app, "components/wallet-providers.tsx"), "utf8");
+  assert.match(source, /useWallet/);
+  assert.match(source, /useWalletModal/);
+  assert.match(source, /slice\(0, 4\)/);
+  assert.match(source, /Disconnect wallet/);
+  assert.match(providers, /WalletProvider wallets=\{wallets\}/);
+  assert.match(providers, /WalletModalProvider/);
 });
 
 test("workspace includes conversion, transfer, and RPC reserve transparency tools", () => {

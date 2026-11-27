@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { Buffer } from "buffer";
-import { verifiedConnection } from "./currency-transactions";
+import { networkDisplayName, verifiedConnection } from "./currency-transactions";
 import { TransactionReview, useSafeTransaction } from "./transaction-review";
 
 const PROGRAM = new PublicKey("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
@@ -11,6 +12,7 @@ const TOKEN = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 const COLLATERAL = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
 
 export function CreateCurrencyPanel() {
+  const wallet = useWallet();
   const [accepted, setAccepted] = useState(false);
   const [mint, setMint] = useState("");
   const [confirmed, setConfirmed] = useState(false);
@@ -19,7 +21,6 @@ export function CreateCurrencyPanel() {
 
   async function prepare() {
     if (!accepted) throw new Error("Accept the test-network fee notice first.");
-    const wallet = window.solana as (typeof window.solana & { signTransaction?: (transaction: Transaction) => Promise<Transaction> });
     if (!wallet?.publicKey || !wallet.signTransaction) throw new Error("Connect a compatible test wallet first.");
     const creator = new PublicKey(wallet.publicKey.toBase58());
     const connection = await verifiedConnection();
@@ -40,7 +41,7 @@ export function CreateCurrencyPanel() {
       connection, block, transaction, wallet, walletAddress: creator.toBase58(),
       review: {
         action: "Create six-decimal Solo-X currency",
-        network,
+        network: networkDisplayName(),
         wallet: creator.toBase58(),
         sourceMint: COLLATERAL.toBase58(),
         destination: issued.publicKey.toBase58(),

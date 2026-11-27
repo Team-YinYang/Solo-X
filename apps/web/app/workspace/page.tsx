@@ -28,16 +28,14 @@ export default function WorkspacePage() {
           <Link className="active" href="/workspace">Workspace</Link>
           <a href="https://github.com/Team-YinYang/Solo-X" target="_blank" rel="noreferrer">Documentation</a>
         </nav>
-        <a className="header-action" href="#wallet">Connect wallet</a>
+        <WalletPanel />
       </header>
 
       <section className="workspace-intro">
-        <span className="eyebrow"><i aria-hidden="true" /> Devnet workspace</span>
+        <span className="eyebrow"><i aria-hidden="true" /> Currency workspace</span>
         <h1>Your currency. <span>Your rules.</span></h1>
-        <p className="lede">Choose a tool to get started. Connect a test wallet to verify ownership. Mint and redeem using test funds only.</p>
+        <p className="lede">Choose a tool to get started. Connect your preferred Solana wallet, then create, mint, transfer, and redeem from one workspace.</p>
       </section>
-
-      <div id="wallet"><WalletPanel /></div>
 
       <section className="tool-grid" aria-label="Solo-X tools">
         {tools.map((tool) => (
@@ -67,7 +65,7 @@ export default function WorkspacePage() {
 
       <footer className="footer">
         <Link className="back" href="/">← Back to overview</Link>
-        <span>Devnet and local validator only · No real funds</span>
+        <span>Test network and local validator only · No real funds</span>
       </footer>
     </main>
   );
