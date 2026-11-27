@@ -11,6 +11,15 @@ pub const CURRENCY_SEED: &[u8] = b"currency";
 pub const VAULT_SEED: &[u8] = b"vault";
 pub const AUTHORITY_SEED: &[u8] = b"authority";
 
+/// Official test-USDC mint on Solana devnet. Local validators clone this account
+/// for integration testing; production collateral configuration is out of scope.
+pub const DEVNET_TEST_USDC_MINT: Pubkey =
+    anchor_lang::solana_program::pubkey!("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+
+pub fn is_supported_collateral_mint(mint: &Pubkey) -> bool {
+    *mint == DEVNET_TEST_USDC_MINT
+}
+
 /// PDA: ["currency", issued_mint]. No issuer-supplied authority.
 #[account]
 #[derive(InitSpace)]
@@ -33,8 +42,16 @@ pub struct CurrencyState {
 
 impl CurrencyState {
     pub fn validate_addresses(&self, program_id: &Pubkey, state_key: &Pubkey) -> Result<()> {
-        require_eq!(self.version, CURRENCY_STATE_VERSION, CurrencyError::InvalidVersion);
-        require_keys_neq!(self.issued_mint, self.collateral_mint, CurrencyError::InvalidMint);
+        require_eq!(
+            self.version,
+            CURRENCY_STATE_VERSION,
+            CurrencyError::InvalidVersion
+        );
+        require_keys_neq!(
+            self.issued_mint,
+            self.collateral_mint,
+            CurrencyError::InvalidMint
+        );
 
         let (expected_state, state_bump) =
             Pubkey::find_program_address(&[CURRENCY_SEED, self.issued_mint.as_ref()], program_id);
@@ -43,13 +60,25 @@ impl CurrencyState {
 
         let (expected_vault, vault_bump) =
             Pubkey::find_program_address(&[VAULT_SEED, state_key.as_ref()], program_id);
-        require_keys_eq!(self.collateral_vault, expected_vault, CurrencyError::InvalidVault);
+        require_keys_eq!(
+            self.collateral_vault,
+            expected_vault,
+            CurrencyError::InvalidVault
+        );
         require_eq!(self.vault_bump, vault_bump, CurrencyError::InvalidBump);
 
         let (expected_authority, authority_bump) =
             Pubkey::find_program_address(&[AUTHORITY_SEED, state_key.as_ref()], program_id);
-        require_keys_eq!(self.authority, expected_authority, CurrencyError::InvalidAuthority);
-        require_eq!(self.authority_bump, authority_bump, CurrencyError::InvalidBump);
+        require_keys_eq!(
+            self.authority,
+            expected_authority,
+            CurrencyError::InvalidAuthority
+        );
+        require_eq!(
+            self.authority_bump,
+            authority_bump,
+            CurrencyError::InvalidBump
+        );
         Ok(())
     }
 }
@@ -101,7 +130,8 @@ pub struct ValidateCurrency<'info> {
 
 impl<'info> ValidateCurrency<'info> {
     pub fn validate(&self, program_id: &Pubkey) -> Result<()> {
-        self.currency.validate_addresses(program_id, &self.currency.key())
+        self.currency
+            .validate_addresses(program_id, &self.currency.key())
     }
 }
 
@@ -115,6 +145,8 @@ pub enum CurrencyError {
     InvalidMint,
     #[msg("Collateral mint mismatch")]
     InvalidCollateralMint,
+    #[msg("Collateral mint is not in the configured test-USDC allowlist")]
+    UnsupportedCollateralMint,
     #[msg("Collateral vault mismatch")]
     InvalidVault,
     #[msg("Currency authority PDA mismatch")]
@@ -145,17 +177,20 @@ mod tests {
             Pubkey::find_program_address(&[VAULT_SEED, state.as_ref()], &program_id);
         let (authority, authority_bump) =
             Pubkey::find_program_address(&[AUTHORITY_SEED, state.as_ref()], &program_id);
-        (CurrencyState {
-            version: CURRENCY_STATE_VERSION,
-            creator: Pubkey::new_unique(),
-            issued_mint: mint,
-            collateral_mint: Pubkey::new_unique(),
-            collateral_vault: vault,
-            authority,
-            state_bump,
-            vault_bump,
-            authority_bump,
-        }, state)
+        (
+            CurrencyState {
+                version: CURRENCY_STATE_VERSION,
+                creator: Pubkey::new_unique(),
+                issued_mint: mint,
+                collateral_mint: Pubkey::new_unique(),
+                collateral_vault: vault,
+                authority,
+                state_bump,
+                vault_bump,
+                authority_bump,
+            },
+            state,
+        )
     }
 
     #[test]
@@ -186,7 +221,9 @@ mod tests {
     fn rejects_wrong_program_id() {
         let program = Pubkey::new_unique();
         let (currency, state) = fixture(program);
-        assert!(currency.validate_addresses(&Pubkey::new_unique(), &state).is_err());
+        assert!(currency
+            .validate_addresses(&Pubkey::new_unique(), &state)
+            .is_err());
     }
 
     #[test]

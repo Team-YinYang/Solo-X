@@ -16,5 +16,9 @@ url = "https://api.apr.dev"
 cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
+[test.validator]
+url = "https://api.devnet.solana.com"
+clone = ["4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"]
+
 [scripts]
 test = "npm run test:anchor"

@@ -151,6 +151,7 @@ The Next.js/SDK workspaces are scaffolded in `apps/web` and `packages/sdk`. With
 - [Roadmap](ROADMAP.md)
 - [Contribution guidelines](CONTRIBUTING.md)
 - [Local setup](docs/SETUP.md)
+- [Currency initialization](docs/CURRENCY_INITIALIZATION.md)
 
 Claim an issue, work on a feature branch and submit a reviewed pull request with tests. Setup commands will be added after scaffolding.
 
