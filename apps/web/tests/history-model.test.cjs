@@ -1,0 +1,13 @@
+const {test}=require("node:test");
+const assert=require("node:assert/strict");
+const ts=require("typescript");
+const fs=require("node:fs");
+const path=require("node:path");
+const source=fs.readFileSync(path.join(__dirname,"../components/history-model.ts"),"utf8");
+const mod={exports:{}};
+new Function("module","exports",ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText)(mod,mod.exports);
+const {historyPage,reconcile}=mod.exports;
+test("pagination uses last signature and stops on short page",async()=>{const rows=Array.from({length:20},(_,i)=>({signature:String(i),slot:i,err:null}));const first=await historyPage(async()=>rows);assert.equal(first.next,"19");const second=await historyPage(async before=>{assert.equal(before,"19");return [];},first.next);assert.equal(second.next,undefined);});
+test("RPC failure propagates without invented history",async()=>{await assert.rejects(historyPage(async()=>{throw Error("RPC unavailable");}),/RPC unavailable/);});
+test("reject repeated cursor and duplicate signatures",async()=>{const row={signature:"x",slot:1,err:null};await assert.rejects(historyPage(async()=>[row],"x"));await assert.rejects(historyPage(async()=>[row,row]));});
+test("reconciliation uses only current balances",()=>{assert.deepEqual(reconcile(100n,90n),{surplus:0n,deficit:10n,covered:false});assert.deepEqual(reconcile(100n,110n),{surplus:10n,deficit:0n,covered:true});assert.equal(reconcile(0n,0n).covered,true);assert.throws(()=>reconcile(-1n,0n));});
