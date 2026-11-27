@@ -1,9 +1,6 @@
-import { BulkTransferPanel } from "../../components/bulk-transfer-panel";
 import Link from "next/link";
 import { CreateCurrencyPanel } from "../../components/create-currency-panel";
 import { MintRedeemPanel } from "../../components/mint-redeem-panel";
-import { ConversionTransferPanel } from "../../components/conversion-transfer-panel";
-import { ReserveDashboard } from "../../components/reserve-dashboard";
 import { WalletPanel } from "../../components/wallet-panel";
 
 const modules = [
@@ -25,11 +22,8 @@ export default function WorkspacePage() {
         <h1>Manage your currencies.</h1>
         <p className="lede">Connect a test wallet to verify ownership. Mint and redeem using test funds only.</p>
         <WalletPanel />
-        <BulkTransferPanel />
         <CreateCurrencyPanel />
         <MintRedeemPanel />
-        <ConversionTransferPanel />
-        <ReserveDashboard />
         <div className="grid">
           {modules.map(({ name, detail }) => (
             <article className="module" key={name}>
