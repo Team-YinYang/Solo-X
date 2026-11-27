@@ -1,3 +1,6 @@
+export { MAX_BULK_TRANSFERS, planBulkTransfers, executeBulkTransfers } from "./bulk-transfers.js";
+export type { TransferRow, TransferStatus, TransferResult, BulkTransport } from "./bulk-transfers.js";
+
 export {
   SOLO_X_NETWORKS,
   createSoloXRpcConfig,

@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build --workspace @solo-x/sdk && next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run build --workspace @solo-x/sdk && tsc --noEmit",
     "test": "node --test tests/*.test.cjs"
   },
   "dependencies": {
