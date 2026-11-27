@@ -45,6 +45,8 @@ and the cloned devnet collateral mint.
 
 ## Known risks and remaining work
 
+See [threat model and excess-reserve accounting](THREAT_MODEL_AND_EXCESS_RESERVES.md) for the explicit trust boundaries, unsolicited deposits, direct burns, zero-supply treatment, and residual risks.
+
 - `main` now contains `mint_currency`, but successful mint → redemption →
   conversion scenarios require an initialized, funded holder account for
   the devnet test-USDC collateral mint. The cloned devnet mint does not
