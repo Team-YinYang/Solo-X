@@ -9,7 +9,7 @@ pub mod state;
 pub use conversion::*;
 
 use state::{
-    is_supported_collateral_mint, CurrencyError, CurrencyState, AUTHORITY_SEED, CURRENCY_DECIMALS,
+    validate_collateral, CurrencyError, CurrencyState, AUTHORITY_SEED, CURRENCY_DECIMALS,
     CURRENCY_SEED, VAULT_SEED,
 };
 
@@ -33,10 +33,11 @@ pub mod solo_x {
     /// vault. The creator is recorded for attribution only: both token accounts
     /// are controlled by the per-currency authority PDA.
     pub fn create_currency(ctx: Context<CreateCurrency>) -> Result<()> {
-        require!(
-            is_supported_collateral_mint(&ctx.accounts.collateral_mint.key()),
-            CurrencyError::UnsupportedCollateralMint
-        );
+        validate_collateral(
+            &ctx.accounts.collateral_mint.key(),
+            ctx.accounts.collateral_mint.decimals,
+            &ctx.accounts.token_program.key(),
+        )?;
 
         let currency = &mut ctx.accounts.currency;
         currency.version = state::CURRENCY_STATE_VERSION;
@@ -57,6 +58,11 @@ pub mod solo_x {
     /// the collateral transfer.
     pub fn mint_currency(ctx: Context<MintCurrency>, amount: u64) -> Result<()> {
         let accounts = &ctx.accounts;
+        validate_collateral(
+            &accounts.collateral_mint.key(),
+            accounts.collateral_mint.decimals,
+            &accounts.token_program.key(),
+        )?;
         accounts
             .currency
             .validate_addresses(ctx.program_id, &accounts.currency.key())?;
@@ -104,6 +110,11 @@ pub mod solo_x {
     /// The holder must sign and own both token accounts. Only the currency's
     /// authority PDA is permitted to transfer reserves from its isolated vault.
     pub fn redeem_currency(ctx: Context<RedeemCurrency>, amount: u64) -> Result<()> {
+        validate_collateral(
+            &ctx.accounts.collateral_mint.key(),
+            ctx.accounts.collateral_mint.decimals,
+            &ctx.accounts.token_program.key(),
+        )?;
         ctx.accounts
             .currency
             .validate_addresses(ctx.program_id, &ctx.accounts.currency.key())?;

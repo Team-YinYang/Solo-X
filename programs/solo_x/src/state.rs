@@ -22,6 +22,22 @@ pub fn is_supported_collateral_mint(mint: &Pubkey) -> bool {
     *mint == DEVNET_TEST_USDC_MINT
 }
 
+/// Immutable MVP collateral policy. The typed Anchor Token program also
+/// enforces the canonical SPL Token program at every instruction boundary.
+pub fn validate_collateral(mint: &Pubkey, decimals: u8, token_program: &Pubkey) -> Result<()> {
+    require!(
+        is_supported_collateral_mint(mint),
+        CurrencyError::UnsupportedCollateralMint
+    );
+    require_eq!(decimals, CURRENCY_DECIMALS, CurrencyError::InvalidDecimals);
+    require_keys_eq!(
+        *token_program,
+        anchor_spl::token::ID,
+        CurrencyError::InvalidTokenProgram
+    );
+    Ok(())
+}
+
 /// PDA: ["currency", issued_mint]. No issuer-supplied authority.
 #[account]
 #[derive(InitSpace)]
@@ -53,6 +69,11 @@ impl CurrencyState {
             self.issued_mint,
             self.collateral_mint,
             CurrencyError::InvalidMint
+        );
+
+        require!(
+            is_supported_collateral_mint(&self.collateral_mint),
+            CurrencyError::UnsupportedCollateralMint
         );
 
         let (expected_state, state_bump) =
@@ -132,6 +153,11 @@ pub struct ValidateCurrency<'info> {
 
 impl<'info> ValidateCurrency<'info> {
     pub fn validate(&self, program_id: &Pubkey) -> Result<()> {
+        validate_collateral(
+            &self.collateral_mint.key(),
+            self.collateral_mint.decimals,
+            &self.token_program.key(),
+        )?;
         self.currency
             .validate_addresses(program_id, &self.currency.key())
     }
@@ -179,6 +205,8 @@ pub enum CurrencyError {
     UnderCollateralized,
     #[msg("Arithmetic overflow during token accounting")]
     ArithmeticOverflow,
+    #[msg("Only the canonical SPL Token program is supported")]
+    InvalidTokenProgram,
 }
 
 #[cfg(test)]
@@ -198,7 +226,7 @@ mod tests {
                 version: CURRENCY_STATE_VERSION,
                 creator: Pubkey::new_unique(),
                 issued_mint: mint,
-                collateral_mint: Pubkey::new_unique(),
+                collateral_mint: DEVNET_TEST_USDC_MINT,
                 collateral_vault: vault,
                 authority,
                 state_bump,
@@ -207,6 +235,24 @@ mod tests {
             },
             state,
         )
+    }
+
+    #[test]
+    fn canonical_collateral_policy_rejects_substitutions() {
+        let token = anchor_spl::token::ID;
+        assert!(validate_collateral(&DEVNET_TEST_USDC_MINT, 6, &token).is_ok());
+        assert!(validate_collateral(&Pubkey::new_unique(), 6, &token).is_err());
+        assert!(validate_collateral(&DEVNET_TEST_USDC_MINT, 9, &token).is_err());
+        assert!(validate_collateral(&DEVNET_TEST_USDC_MINT, 0, &token).is_err());
+        assert!(validate_collateral(&DEVNET_TEST_USDC_MINT, 6, &Pubkey::new_unique()).is_err());
+    }
+
+    #[test]
+    fn rejects_collateral_mutation_even_with_valid_pdas() {
+        let program = Pubkey::new_unique();
+        let (mut currency, state) = fixture(program);
+        currency.collateral_mint = Pubkey::new_unique();
+        assert!(currency.validate_addresses(&program, &state).is_err());
     }
 
     #[test]
