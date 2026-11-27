@@ -177,7 +177,7 @@ pub enum CurrencyError {
     InsufficientReserves,
     #[msg("Currency collateral balance is below outstanding supply")]
     UnderCollateralized,
-    #[msg("Arithmetic overflow during redemption")]
+    #[msg("Arithmetic overflow during token accounting")]
     ArithmeticOverflow,
 }
 

@@ -17,3 +17,24 @@ The instruction keeps the reserve invariant intact: before minting, the vault
 must cover supply; afterwards, vault balance and supply have both increased by
 the same amount. This MVP only supports the configured devnet test-USDC mint.
 Do not use real funds.
+
+## Exact `mintCurrency` accounts
+
+The depositor signs the instruction. Supply and vault balances are updated only
+after the canonical relationships below are verified:
+
+| Account | Requirement |
+| --- | --- |
+| `depositor` | Signing owner of `depositorCollateralTokens`. |
+| `currency` | PDA `['currency', issuedMint]`. |
+| `issuedMint` | Six-decimal currency mint, controlled by `authority`. |
+| `collateralMint` | The currency's configured six-decimal test-USDC mint. |
+| `depositorCollateralTokens` | Depositor-owned account for `collateralMint`. |
+| `recipientIssuedTokens` | Token account for `issuedMint`; can belong to a recipient. |
+| `collateralVault` | PDA `['vault', currency]`, owned by `authority`. |
+| `authority` | PDA `['authority', currency]`; signs the mint CPI. |
+| `tokenProgram` | Standard SPL Token program. |
+
+`amount` must be a positive `u64` count of six-decimal base units. Wrong mints,
+wrong vaults, unauthorized sources, reserve deficits, arithmetic overflow and
+insufficient source balances fail without partial state changes.

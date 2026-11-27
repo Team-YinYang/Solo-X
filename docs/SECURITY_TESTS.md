@@ -45,16 +45,16 @@ and the cloned devnet collateral mint.
 
 ## Known risks and remaining work
 
-- `main` currently contains `create_currency`, `redeem_currency`, and
-  `convert_currency`, but **not** the `mint_currency` instruction, even
-  though issue #6 is marked closed. Until the instruction lands, a funded,
-  successful mint → redemption → conversion scenario cannot run.
+- `main` now contains `mint_currency`, but successful mint → redemption →
+  conversion scenarios require an initialized, funded holder account for
+  the devnet test-USDC collateral mint. The cloned devnet mint does not
+  automatically provide spendable balances to the local validator wallet.
 - The bounded Rust arithmetic oracle is a regression model, **not** a proof of
   transaction-level SPL-token safety. Only validator tests verify RPC account
   ownership, PDA signatures, and Solana rollback.
 - The validator rollback test confirms atomic rollback across two `create_currency`
   instructions. A post-burn failed transfer and a post-collateral-transfer failed
-  mint must be added when funded minting is available.
+  mint should be added after provisioning funded test-USDC fixtures.
 - Upgrade authority, RPC trust, collateral issuer restrictions, frozen accounts,
   and audit readiness remain outside the assurance of this test suite.
 - This MVP uses devnet test-USDC and is unaudited. Do not use production funds.
