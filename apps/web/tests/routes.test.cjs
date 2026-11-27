@@ -36,7 +36,8 @@ test("workspace includes conversion, transfer, and RPC reserve transparency tool
   assert.match(workspace, /ConversionTransferPanel/);
   assert.match(workspace, /ReserveDashboard/);
   assert.match(operations, /Convert compatible currency/);
-  assert.match(operations, /Transaction failed on chain; all state changes were rolled back/);
+  assert.match(operations, /TransactionReview/);
+  assert.match(operations, /flow\.recheck\(\)/);
   assert.match(dashboard, /Reserve ratio/);
   assert.match(dashboard, /Mint in explorer/);
 });
