@@ -2,6 +2,9 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
 pub mod state;
+pub mod conversion;
+
+pub use conversion::*;
 
 use state::{
     is_supported_collateral_mint, CurrencyError, CurrencyState, AUTHORITY_SEED, CURRENCY_DECIMALS,
@@ -18,6 +21,10 @@ pub mod solo_x {
 
     pub fn initialize(_ctx: Context<Initialize>) -> Result<()> {
         Ok(())
+    }
+
+    pub fn convert_currency(ctx: Context<ConvertCurrency>, amount: u64) -> Result<()> {
+        conversion::execute(ctx, amount)
     }
 
     /// Creates one zero-supply, six-decimal currency and its isolated collateral
