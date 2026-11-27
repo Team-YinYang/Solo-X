@@ -3,16 +3,15 @@
 //! and transaction rollback behavior is exercised by tests/security.ts under
 //! `anchor test` with the local validator configured in Anchor.toml.
 use crate::state::{
-    CurrencyState, AUTHORITY_SEED, CURRENCY_DECIMALS, CURRENCY_SEED,
-    CURRENCY_STATE_VERSION, DEVNET_TEST_USDC_MINT, VAULT_SEED,
+    CurrencyState, AUTHORITY_SEED, CURRENCY_DECIMALS, CURRENCY_SEED, CURRENCY_STATE_VERSION,
+    DEVNET_TEST_USDC_MINT, VAULT_SEED,
 };
 use anchor_lang::prelude::*;
 
 fn currency_fixture(program_id: &Pubkey, issued_mint: Pubkey) -> (CurrencyState, Pubkey) {
     let (key, state_bump) =
         Pubkey::find_program_address(&[CURRENCY_SEED, issued_mint.as_ref()], program_id);
-    let (vault, vault_bump) =
-        Pubkey::find_program_address(&[VAULT_SEED, key.as_ref()], program_id);
+    let (vault, vault_bump) = Pubkey::find_program_address(&[VAULT_SEED, key.as_ref()], program_id);
     let (authority, authority_bump) =
         Pubkey::find_program_address(&[AUTHORITY_SEED, key.as_ref()], program_id);
     (
@@ -223,11 +222,66 @@ fn reserve_always_covers_supply_across_exhaustive_small_balance_transitions() {
 #[test]
 fn failed_operations_and_overflows_leave_both_ledgers_unchanged() {
     for (source, destination, amount, holder) in [
-        (Ledger { supply: 2, reserve: 1 }, Ledger { supply: 4, reserve: 4 }, 1, 1),
-        (Ledger { supply: 3, reserve: 3 }, Ledger { supply: 4, reserve: 3 }, 1, 1),
-        (Ledger { supply: 3, reserve: 3 }, Ledger { supply: 4, reserve: 4 }, 4, 4),
-        (Ledger { supply: 3, reserve: 3 }, Ledger { supply: 4, reserve: 4 }, 1, 0),
-        (Ledger { supply: 3, reserve: 3 }, Ledger { supply: u64::MAX, reserve: u64::MAX }, 1, 1),
+        (
+            Ledger {
+                supply: 2,
+                reserve: 1,
+            },
+            Ledger {
+                supply: 4,
+                reserve: 4,
+            },
+            1,
+            1,
+        ),
+        (
+            Ledger {
+                supply: 3,
+                reserve: 3,
+            },
+            Ledger {
+                supply: 4,
+                reserve: 3,
+            },
+            1,
+            1,
+        ),
+        (
+            Ledger {
+                supply: 3,
+                reserve: 3,
+            },
+            Ledger {
+                supply: 4,
+                reserve: 4,
+            },
+            4,
+            4,
+        ),
+        (
+            Ledger {
+                supply: 3,
+                reserve: 3,
+            },
+            Ledger {
+                supply: 4,
+                reserve: 4,
+            },
+            1,
+            0,
+        ),
+        (
+            Ledger {
+                supply: 3,
+                reserve: 3,
+            },
+            Ledger {
+                supply: u64::MAX,
+                reserve: u64::MAX,
+            },
+            1,
+            1,
+        ),
     ] {
         let mut a = source;
         let mut b = destination;
@@ -235,7 +289,10 @@ fn failed_operations_and_overflows_leave_both_ledgers_unchanged() {
         assert_eq!((a, b), (source, destination));
     }
 
-    let mut ledger = Ledger { supply: u64::MAX, reserve: u64::MAX };
+    let mut ledger = Ledger {
+        supply: u64::MAX,
+        reserve: u64::MAX,
+    };
     let original = ledger;
     assert!(!ledger.mint(1));
     assert_eq!(ledger, original);
