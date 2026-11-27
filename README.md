@@ -114,7 +114,7 @@ git clone https://github.com/Team-YinYang/Solo-X.git
 cd Solo-X
 ```
 
-Executable setup, dependency versions and test commands will be documented once scaffolding is available. See [ROADMAP.md](ROADMAP.md) for milestones.
+The Anchor workspace is ready for local development. Follow the [local setup guide](docs/SETUP.md) to install the pinned toolchain, start a validator and run the smoke test. See [ROADMAP.md](ROADMAP.md) for milestones.
 
 ## Proposed technology stack
 
@@ -148,6 +148,7 @@ Executable setup, dependency versions and test commands will be documented once 
 - [Architecture](ARCHITECTURE.md)
 - [Roadmap](ROADMAP.md)
 - [Contribution guidelines](CONTRIBUTING.md)
+- [Local setup](docs/SETUP.md)
 
 Claim an issue, work on a feature branch and submit a reviewed pull request with tests. Setup commands will be added after scaffolding.
 
