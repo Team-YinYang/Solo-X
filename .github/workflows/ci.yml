@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, docs/issue-20-governance-readiness-orenyi]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
