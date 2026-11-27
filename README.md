@@ -157,6 +157,27 @@ The Next.js/SDK workspaces are scaffolded in `apps/web` and `packages/sdk`. With
 
 Claim an issue, work on a feature branch and submit a reviewed pull request with tests. Setup commands will be added after scaffolding.
 
+
+## Governance and production launch controls
+
+**Mainnet is not authorized.** All deployment and security claims in this
+repository are development targets, not operational assurances. An upgrade
+authority may replace on-chain program logic; reserve accounting alone does not
+guarantee stable collateral value or off-chain legal redemption. Before any
+production decision, maintainers must verify upgrade custody on chain, approve
+multisig/key handling, obtain an independent audit, rehearse incident response,
+review applicable compliance requirements, and record evidence for every gate.
+
+- [Governance and production-readiness policy](docs/PRODUCTION_READINESS.md)
+- [Security disclosure policy](SECURITY.md)
+- [Machine-readable launch gates](docs/launch-gates.json)
+
+Run `node .github/scripts/check-launch-gates.cjs` to inspect outstanding
+requirements; `node .github/scripts/check-launch-gates.cjs --assert-mainnet`
+is intentionally failing until independently reviewed gates are recorded.
+This is an advisory check and does not itself prevent a separate deployment
+system from deploying a program.
+
 ## Status and security
 
 Early development. Features above are planned, not deployed. No audited program exists yet. Use local validator or devnet with clearly labelled test collateral only. Do not deposit real funds. SOL-backed issuance requires a separate oracle, liquidation and bad-debt design. License selection is pending team approval.

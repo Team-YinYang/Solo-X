@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "network": "devnet",
+  "mainnetAuthorized": false,
+  "lastReviewed": "2026-11-27",
+  "policy": "docs/PRODUCTION_READINESS.md",
+  "gates": [
+    {
+      "id": "upgrade-authority",
+      "owner": "Protocol lead",
+      "approved": false,
+      "evidence": [],
+      "criterion": "Verified on-chain upgrade authority and documented multisig signers, threshold, and recovery procedures"
+    },
+    {
+      "id": "independent-audit",
+      "owner": "Security lead",
+      "approved": false,
+      "evidence": [],
+      "criterion": "Independent audit, report and remediation sign-off for exact deployed commit"
+    },
+    {
+      "id": "security-tests",
+      "owner": "Engineering lead",
+      "approved": false,
+      "evidence": [],
+      "criterion": "Green required CI and funded local-validator invariant, rollback and adversarial tests"
+    },
+    {
+      "id": "incident-response",
+      "owner": "Operations lead",
+      "approved": false,
+      "evidence": [],
+      "criterion": "Named incident commander, private reporting route, on-call drill and emergency authority review"
+    },
+    {
+      "id": "collateral-risk",
+      "owner": "Risk lead",
+      "approved": false,
+      "evidence": [],
+      "criterion": "Approved reserve policy, issuer/freeze risk analysis, reconciliation and redemption failure scenarios"
+    },
+    {
+      "id": "legal-compliance",
+      "owner": "Legal/compliance reviewer",
+      "approved": false,
+      "evidence": [],
+      "criterion": "Applicable-jurisdiction legal classification and compliance/privacy review signed off"
+    },
+    {
+      "id": "operations-monitoring",
+      "owner": "Operations lead",
+      "approved": false,
+      "evidence": [],
+      "criterion": "Independent RPC verification, operational alerts, recovery and change-management runbooks tested"
+    },
+    {
+      "id": "release-approval",
+      "owner": "Maintainers",
+      "approved": false,
+      "evidence": [],
+      "criterion": "Documented mainnet decision, deployment addresses, immutable release hash and sign-offs"
+    }
+  ]
+}

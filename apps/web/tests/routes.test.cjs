@@ -15,6 +15,7 @@ test("workspace includes wallet and currency creation panels", () => {
   const source = fs.readFileSync(path.join(app, "app/workspace/page.tsx"), "utf8");
   assert.match(source, /WalletPanel/);
   assert.match(source, /CreateCurrencyPanel/);
+  assert.match(source, /MintRedeemPanel/);
   assert.match(source, /Devnet and local validator only/);
 });
 
