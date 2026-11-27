@@ -44,9 +44,3 @@ export type {
   SoloXCurrencyState,
   SoloXReserveSnapshot,
 } from "./transactions.js";
-
-export { parseSoloXDecimalAmount, simulateSoloXTransaction, SoloXSimulationError } from "./preflight.js";
-export type { SoloXSimulationClient, SoloXSimulationResult } from "./preflight.js";
-
-export { MAX_BULK_TRANSFERS, planBulkTransfers, executeBulkTransfers } from "./bulk-transfers.js";
-export type { TransferRow, TransferStatus, TransferResult, BulkTransport } from "./bulk-transfers.js";
