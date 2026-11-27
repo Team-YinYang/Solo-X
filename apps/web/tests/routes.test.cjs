@@ -50,6 +50,15 @@ test("ordinary token creation remains separate from backed Solo-X flows", () => 
   assert.match(source, /never creates a Solo-X currency state or collateral vault/);
 });
 
+test("metadata is optional, address-first, and rejects unsafe branding URLs", () => {
+  const workspace = fs.readFileSync(path.join(app, "app/workspace/page.tsx"), "utf8");
+  const source = fs.readFileSync(path.join(app, "components/currency-metadata-panel.tsx"), "utf8");
+  assert.match(workspace, /CurrencyMetadataPanel/);
+  assert.match(source, /url.protocol === "https:"/);
+  assert.match(source, /Duplicate names are allowed/);
+  assert.match(source, /cannot change backing/);
+});
+
 test("environment example contains only public devnet configuration", () => {
   const env = fs.readFileSync(path.join(root, ".env.example"), "utf8");
   assert.match(env, /NEXT_PUBLIC_SOLANA_NETWORK=devnet/);
