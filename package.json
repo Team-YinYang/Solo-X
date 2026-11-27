@@ -16,7 +16,8 @@
     "lint": "npm run lint --workspaces",
     "typecheck": "npm run typecheck --workspaces",
     "build": "npm run build -w @solo-x/sdk && npm run build -w @solo-x/web",
-    "test": "npm run build -w @solo-x/sdk && npm run test --workspaces"
+    "test": "npm run build -w @solo-x/sdk && npm run test --workspaces",
+    "test:anchor": "ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
   },
   "devDependencies": {
     "@types/node": "20.19.43",
@@ -24,6 +25,11 @@
     "@types/react-dom": "19.2.4",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.12",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "@coral-xyz/anchor": "0.30.1",
+    "@types/chai": "4.3.16",
+    "@types/mocha": "10.0.6",
+    "chai": "4.4.1",
+    "ts-mocha": "10.0.0"
   }
 }
