@@ -100,6 +100,8 @@ contain a mainnet deployment workflow.
 
 ## Change management and release records
 
+Every independent-audit finding must have a severity, owner, target date, remediation commit, retest evidence, and explicit disposition. Unresolved findings require written residual-risk acceptance by authorized maintainers; critical findings block launch.
+
 1. Propose a change with threat-model impact, diff, target addresses and rationale.
 2. Require peer review, static analysis, Rust/TS checks, and full validator tests.
 3. For security-critical changes, request a fresh independent audit and retest.

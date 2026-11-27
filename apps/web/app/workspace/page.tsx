@@ -5,6 +5,7 @@ import { ConversionTransferPanel } from "../../components/conversion-transfer-pa
 import { ReserveDashboard } from "../../components/reserve-dashboard";
 import { WalletPanel } from "../../components/wallet-panel";
 import { OrdinaryTokenPanel } from "../../components/ordinary-token-panel";
+import { CurrencyMetadataPanel } from "../../components/currency-metadata-panel";
 
 const modules = [
   { name: "Manage reserves", detail: "Collateral and supply overview" },
@@ -27,6 +28,7 @@ export default function WorkspacePage() {
         <WalletPanel />
         <CreateCurrencyPanel />
         <OrdinaryTokenPanel />
+        <CurrencyMetadataPanel />
         <MintRedeemPanel />
         <ConversionTransferPanel />
         <ReserveDashboard />

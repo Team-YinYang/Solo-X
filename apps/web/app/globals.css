@@ -48,4 +48,5 @@ h1 { max-width: 900px; margin: 22px 0 20px; font-size: clamp(3.1rem, 7vw, 6.2rem
 .reserve-values { display: grid; gap: 8px; margin-top: 18px; }
 .reserve-values span { display: flex; justify-content: space-between; max-width: 360px; }
 .reserve-values small { color: #69766d; }.backed { color: #18875a; }.unbacked { color: #b74343; }
+.module label { display: grid; gap: 5px; margin: 12px 0; color: #526057; font-size: 13px; font-weight: 700; }.module input { border: 1px solid #cfd8d2; border-radius: 9px; padding: 10px; font: inherit; }.module:focus-within { border-color: #764db5; box-shadow: 0 0 0 3px #764db522; }.module button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #764db5; outline-offset: 3px; }
 @media (max-width: 650px) { .shell { width: calc(100% - 32px); } .header { padding: 24px 0; } .label { font-size: 10px; } .grid { grid-template-columns: 1fr; } .footer { flex-direction: column; } .wallet-panel { grid-template-columns: 1fr; padding: 22px; } .network-status { align-items: flex-start; } .wallet-actions { flex-wrap: wrap; } .dashboard-form { flex-direction: column; } }
