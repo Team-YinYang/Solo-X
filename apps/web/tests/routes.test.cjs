@@ -52,6 +52,6 @@ test("environment example contains only public devnet configuration", () => {
 test("currency creation requires consent, prepared wallet review and confirmed submission", () => {
   const source = fs.readFileSync(path.join(app, "components/create-currency-panel.tsx"), "utf8");
   const review = fs.readFileSync(path.join(app, "components/transaction-review.tsx"), "utf8");
-  for (const pattern of [/!accepted/, /verifiedConnection/, /partialSign\\(issued\\)/, /TransactionReview/, /flow\\.approve\\(\\)/, /flow\\.recheck\\(\\)/, /cluster=devnet/]) assert.match(source, pattern);
+  for (const pattern of [/!accepted/, /verifiedConnection/, /partialSign\(issued\)/, /TransactionReview/, /flow\.approve\(\)/, /flow\.recheck\(\)/, /cluster=devnet/]) assert.match(source, pattern);
   for (const pattern of [/wallet.signTransaction/, /skipPreflight: false/, /confirmTransaction/, /result.value.err/, /signedSignature/]) assert.match(review, pattern);
 });
