@@ -377,8 +377,7 @@ fn seeded_accounting_sequences_preserve_invariants() {
                     ok
                 }
                 1 => {
-                    let ok =
-                        crate::check_redemption(amount, a.supply, a.supply, a.reserve).is_ok();
+                    let ok = crate::check_redemption(amount, a.supply, a.supply, a.reserve).is_ok();
                     if ok {
                         ledgers[index].supply -= amount;
                         ledgers[index].reserve -= amount;
@@ -393,12 +392,7 @@ fn seeded_accounting_sequences_preserve_invariants() {
                 }
                 3 => {
                     let ok = crate::conversion::check_amounts(
-                        amount,
-                        a.supply,
-                        a.reserve,
-                        b.supply,
-                        b.reserve,
-                        a.supply,
+                        amount, a.supply, a.reserve, b.supply, b.reserve, a.supply,
                     )
                     .is_ok();
                     if ok {
@@ -416,8 +410,7 @@ fn seeded_accounting_sequences_preserve_invariants() {
             assert_eq!(wallet, expected_wallet, "seed={seed} step={step}");
             assert!(ledgers.iter().all(|ledger| ledger.solvent()));
             assert_eq!(
-                u128::from(wallet)
-                    + ledgers.iter().map(|l| u128::from(l.reserve)).sum::<u128>(),
+                u128::from(wallet) + ledgers.iter().map(|l| u128::from(l.reserve)).sum::<u128>(),
                 10_000
             );
             if accepted {
