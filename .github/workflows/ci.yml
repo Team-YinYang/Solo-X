@@ -42,20 +42,20 @@ jobs:
       - name: Diagnostic regenerate Cargo lockfile
         if: steps.rust.outputs.present == 'true'
         run: |
-          cargo generate-lockfile
+          RUSTUP_TOOLCHAIN=stable cargo generate-lockfile
           echo CARGO_LOCK_BEGIN
-          gzip -c Cargo.lock | base64 -w0
+          cat Cargo.lock
           echo
           echo CARGO_LOCK_END
       - name: Lint
         if: steps.rust.outputs.present == 'true'
-        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+        run: RUSTUP_TOOLCHAIN=stable cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Build
         if: steps.rust.outputs.present == 'true'
-        run: cargo build --workspace --locked
+        run: RUSTUP_TOOLCHAIN=stable cargo build --workspace --locked
       - name: Test
         if: steps.rust.outputs.present == 'true'
-        run: cargo test --workspace --locked
+        run: RUSTUP_TOOLCHAIN=stable cargo test --workspace --locked
 
   typescript:
     name: TypeScript / Workspace
@@ -88,7 +88,7 @@ jobs:
         run: |
           npm install --package-lock-only --ignore-scripts --no-audit --no-fund
           echo NPM_LOCK_BEGIN
-          gzip -c package-lock.json | base64 -w0
+          cat package-lock.json
           echo
           echo NPM_LOCK_END
       - name: Install dependencies
