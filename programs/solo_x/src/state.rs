@@ -163,6 +163,20 @@ pub enum CurrencyError {
     InvalidVaultDelegate,
     #[msg("Vault close authority is not allowed")]
     InvalidVaultCloseAuthority,
+    #[msg("Redeeming zero tokens is not allowed")]
+    ZeroAmount,
+    #[msg("Holder does not own the supplied token account")]
+    InvalidHolder,
+    #[msg("Holder has insufficient issued tokens")]
+    InsufficientHolderBalance,
+    #[msg("Issued mint has insufficient outstanding supply")]
+    InsufficientSupply,
+    #[msg("Collateral vault has insufficient funds")]
+    InsufficientReserves,
+    #[msg("Currency collateral balance is below outstanding supply")]
+    UnderCollateralized,
+    #[msg("Arithmetic overflow during redemption")]
+    ArithmeticOverflow,
 }
 
 #[cfg(test)]
