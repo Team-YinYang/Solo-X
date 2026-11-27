@@ -1,3 +1,4 @@
+import { verifyCurrency } from "./currency-identity";
 import { Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { Buffer } from "buffer";
 
@@ -18,16 +19,7 @@ export async function verifiedConnection() {
 }
 
 export async function loadAccounts(connection: Connection, holder: PublicKey, issued: PublicKey) {
-  if (issued.equals(COLLATERAL)) throw new Error("Select an issued currency mint.");
-  const [currency] = PublicKey.findProgramAddressSync([Buffer.from("currency"), issued.toBuffer()], PROGRAM);
-  const [vault] = PublicKey.findProgramAddressSync([Buffer.from("vault"), currency.toBuffer()], PROGRAM);
-  const [authority] = PublicKey.findProgramAddressSync([Buffer.from("authority"), currency.toBuffer()], PROGRAM);
-  const state = await connection.getAccountInfo(currency);
-  if (!state || !state.owner.equals(PROGRAM) || state.data.length !== 172 || state.data[8] !== 1 ||
-    !new PublicKey(state.data.subarray(41,73)).equals(issued) ||
-    !new PublicKey(state.data.subarray(73,105)).equals(COLLATERAL) ||
-    !new PublicKey(state.data.subarray(105,137)).equals(vault) ||
-    !new PublicKey(state.data.subarray(137,169)).equals(authority)) throw new Error("Currency is not a verified Solo-X currency.");
+  const { currency, vault, authority } = await verifyCurrency(connection, issued);
   async function find(mint: PublicKey) {
     const accounts = await connection.getTokenAccountsByOwner(holder, { mint });
     const valid = accounts.value.filter(({account}) => account.owner.equals(TOKEN) && account.data.length === 165 && account.data[108] === 1);
