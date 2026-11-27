@@ -46,13 +46,14 @@ local validator, and fund the keypair:
 ```bash
 solana-keygen new --outfile ~/.config/solana/id.json
 solana config set --url http://127.0.0.1:8899
-solana-test-validator --reset
+solana-test-validator --reset --clone 4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU
 # In a second terminal:
 solana airdrop 10
 ```
 
 The validator process must remain running while executing tests. `anchor test`
 can also start and stop its own local validator when one is not already running.
+It clones the approved devnet test-USDC mint configured in `Anchor.toml`.
 
 ## Build and smoke test
 

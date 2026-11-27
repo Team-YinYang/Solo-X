@@ -11,6 +11,15 @@ pub const CURRENCY_SEED: &[u8] = b"currency";
 pub const VAULT_SEED: &[u8] = b"vault";
 pub const AUTHORITY_SEED: &[u8] = b"authority";
 
+/// Official test-USDC mint on Solana devnet. Local validators clone this account
+/// for integration testing; production collateral configuration is out of scope.
+pub const DEVNET_TEST_USDC_MINT: Pubkey =
+    anchor_lang::solana_program::pubkey!("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+
+pub fn is_supported_collateral_mint(mint: &Pubkey) -> bool {
+    *mint == DEVNET_TEST_USDC_MINT
+}
+
 /// PDA: ["currency", issued_mint]. No issuer-supplied authority.
 #[account]
 #[derive(InitSpace)]
@@ -115,6 +124,8 @@ pub enum CurrencyError {
     InvalidMint,
     #[msg("Collateral mint mismatch")]
     InvalidCollateralMint,
+    #[msg("Collateral mint is not in the configured test-USDC allowlist")]
+    UnsupportedCollateralMint,
     #[msg("Collateral vault mismatch")]
     InvalidVault,
     #[msg("Currency authority PDA mismatch")]

@@ -1,6 +1,6 @@
 # Currency state and account constraints — issue #4
 
-This documents the **MVP interface**, not a deployed or audited program. The Rust implementation lives in `programs/solo_x/src/state.rs`. The Anchor workspace, initialization, minting, redemption, and conversion instructions are separate issues. Use local validator or devnet test tokens only.
+This documents the **MVP interface**, not a deployed or audited program. The Rust implementation lives in `programs/solo_x/src/state.rs`. The Anchor workspace and currency initialization instruction are implemented; minting, redemption, and conversion remain separate issues. Use local validator or devnet test tokens only.
 
 ## PDA derivations
 
@@ -49,9 +49,8 @@ Seven Rust unit tests are included for valid derivations and rejection of **cros
 
 ## Integration steps
 
-1. When the Anchor program is scaffolded (#1), add `pub mod state;` in `programs/solo_x/src/lib.rs` and import the state/accounts types where needed.
-2. When initializing currencies (#5), allocate `8 + CurrencyState::INIT_SPACE` and populate all fields from verified accounts, never caller-provided bumps.
-3. Reuse `ValidateCurrency` in later instruction contexts and call `.validate(ctx.program_id)?` after Anchor's account constraints, before CPI token operations.
-4. Run `cargo test` and `anchor test` on the initialized workspace and add local-validator tests covering foreign-owned state/mints, wrong SPL Token program, vault delegation and account substitutions.
+1. `create_currency` (#5) allocates `8 + CurrencyState::INIT_SPACE` and populates all fields from verified accounts, never caller-provided bumps.
+2. Reuse `ValidateCurrency` in later instruction contexts and call `.validate(ctx.program_id)?` after Anchor's account constraints, before CPI token operations.
+3. Run `cargo test` and `anchor test` on the initialized workspace and add local-validator tests covering foreign-owned state/mints, wrong SPL Token program, vault delegation and account substitutions.
 
-**Verification status:** The repository currently lacks a Cargo/Anchor workspace, so this standalone module cannot yet be compiled or run as part of the repo's Rust test suite. No successful Rust build or local-validator test is claimed. Code must pass those checks after integration, before deployment or use with assets.
+**Verification status:** The repository now includes a Cargo/Anchor workspace and a two-currency local-validator integration test. No successful local-validator run is claimed until the pinned Solana and Anchor toolchain is installed and `anchor test` completes. Code must pass those checks before deployment or use with assets.
