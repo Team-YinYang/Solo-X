@@ -1,0 +1,5 @@
+# No-code currency creation
+
+Open the workspace on devnet or a local validator with the Solo-X program and configured test-USDC mint deployed. Connect a compatible browser wallet funded with test SOL, review the fixed six-decimal and test-USDC settings, accept the fee notice and select Create stablecoin. Approve the wallet transaction. The browser generates a temporary mint signer and derives the isolated state, authority and vault accounts. The wallet pays creation fees; no initial tokens are minted. After confirmed success, copy the issued mint address or open the transaction in Solana Explorer. Names and symbols are not supported by the on-chain instruction. If confirmation fails or submission is uncertain, inspect wallet history and explorer before retrying. Never use real funds.
+
+Verification: npm run test -w @solo-x/web, npm run typecheck -w @solo-x/web, npm run lint -w @solo-x/web, npm run build -w @solo-x/web. Manually test wallet rejection, missing deployment, successful creation, and duplicate-click prevention on a funded test wallet. Source-level tests do not replace this browser integration check.
