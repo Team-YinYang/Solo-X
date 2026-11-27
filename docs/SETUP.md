@@ -10,7 +10,7 @@ for local development and devnet only; never use real funds or a production wall
 | Rust | 1.75.0 |
 | Solana CLI | 1.18.18 |
 | Anchor CLI and TypeScript client | 0.30.1 |
-| Node.js | 20.x LTS |
+| Node.js | 22.x LTS |
 
 `Anchor.toml` and `rust-toolchain.toml` are the repository source of truth for
 these versions. Keep the Anchor CLI and the `@coral-xyz/anchor` package on the
@@ -58,7 +58,7 @@ It clones the approved devnet test-USDC mint configured in `Anchor.toml`.
 ## Build and smoke test
 
 ```bash
-npm install
+npm ci
 anchor build
 anchor test
 ```

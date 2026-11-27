@@ -75,6 +75,9 @@ jobs:
         shell: bash
         run: |
           node .github/scripts/check-ts-workspace.cjs
+      - name: Dependency and secret hygiene
+        if: steps.ts.outputs.present == 'true'
+        run: node .github/scripts/check-security-hygiene.cjs
       - name: Install dependencies
         if: steps.ts.outputs.present == 'true'
         run: npm ci

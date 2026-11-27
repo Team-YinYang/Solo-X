@@ -154,6 +154,7 @@ The Next.js/SDK workspaces are scaffolded in `apps/web` and `packages/sdk`. With
 - [Currency initialization](docs/CURRENCY_INITIALIZATION.md)
 - [Collateral-backed minting](docs/MINTING.md)
 - [Wallet connection](docs/WALLET.md)
+- [Reproducible lifecycle quickstart](docs/QUICKSTART_LIFECYCLE.md)
 
 Claim an issue, work on a feature branch and submit a reviewed pull request with tests. Setup commands will be added after scaffolding.
 
