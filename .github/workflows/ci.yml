@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, feat/issue-7-holder-redemption-orenyi]
   workflow_dispatch:
 
 permissions:
