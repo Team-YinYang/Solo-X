@@ -80,3 +80,6 @@ test("report mode does not fail development CI; assert mode blocks", () => {
 test("fully populated fixture is structurally approved, without implying an audit", () => {
   assert.equal(assessReadiness(approvedFixture()).ready, true);
 });
+
+// Include the proposed governance reference policy in the existing CI suite.
+require("./governance-policy.test.cjs");
