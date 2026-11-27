@@ -35,6 +35,8 @@ const { endpoint, commitment } = createSoloXRpcConfig("devnet");
 
 The SDK offers localnet/devnet RPC configuration, typed unsigned create/mint/redeem/convert instruction builders, PDA derivation helpers and defensive currency/reserve readers. See [SDK transaction and reserve usage](SDK_TRANSACTIONS.md). It never holds private keys, signs, or sends transactions; wallet integration stays in the consuming application. It does not support mainnet.
 
+The workspace provides wallet-gated mint/redeem, conversion, transfer, and RPC reserve views for test currencies. See [conversion, transfers, and reserve reads](CONVERSION_TRANSFERS_AND_RESERVES.md).
+
 The workspace package directories are `apps/web` and `packages/sdk`. Install from the repository root so npm links the SDK workspace correctly.
 
 **Security:** This is an unaudited foundation preview. Use a local validator or devnet only; never deposit real funds.

@@ -38,4 +38,14 @@ h1 { max-width: 900px; margin: 22px 0 20px; font-size: clamp(3.1rem, 7vw, 6.2rem
 .wallet-button:disabled { cursor: not-allowed; opacity: .58; }
 .wallet-button.secondary { background: #e9eeeb; color: #26312a; }
 .wallet-message { grid-column: 1 / -1; border-left: 3px solid #9945ff; padding-left: 12px; font-size: 14px; }
-@media (max-width: 650px) { .shell { width: calc(100% - 32px); } .header { padding: 24px 0; } .label { font-size: 10px; } .grid { grid-template-columns: 1fr; } .footer { flex-direction: column; } .wallet-panel { grid-template-columns: 1fr; padding: 22px; } .network-status { align-items: flex-start; } .wallet-actions { flex-wrap: wrap; } }
+.operation-panel, .reserve-dashboard { min-height: auto; margin-bottom: 18px; }
+.operation-panel h2, .reserve-dashboard h2 { margin: 0 0 10px; }
+.operation-panel form, .mint-redeem-panel form { display: grid; gap: 12px; margin-top: 18px; }
+.operation-panel label, .mint-redeem-panel label { display: grid; gap: 5px; color: #526057; font-size: 13px; font-weight: 700; }
+.operation-panel input, .operation-panel select, .mint-redeem-panel input, .mint-redeem-panel select, .dashboard-form input { border: 1px solid #cfd8d2; border-radius: 9px; padding: 10px; font: inherit; }
+.dashboard-form { display: flex; gap: 10px; margin-top: 18px; }
+.dashboard-form input { flex: 1; min-width: 0; }
+.reserve-values { display: grid; gap: 8px; margin-top: 18px; }
+.reserve-values span { display: flex; justify-content: space-between; max-width: 360px; }
+.reserve-values small { color: #69766d; }.backed { color: #18875a; }.unbacked { color: #b74343; }
+@media (max-width: 650px) { .shell { width: calc(100% - 32px); } .header { padding: 24px 0; } .label { font-size: 10px; } .grid { grid-template-columns: 1fr; } .footer { flex-direction: column; } .wallet-panel { grid-template-columns: 1fr; padding: 22px; } .network-status { align-items: flex-start; } .wallet-actions { flex-wrap: wrap; } .dashboard-form { flex-direction: column; } }
