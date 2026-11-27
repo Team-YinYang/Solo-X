@@ -1,0 +1,31 @@
+const {test}=require("node:test");
+const assert=require("node:assert/strict");
+const ts=require("typescript");
+const fs=require("node:fs");
+const path=require("node:path");
+const {PublicKey,Keypair}=require("@solana/web3.js");
+const {createHash,webcrypto}=require("node:crypto");
+const source=fs.readFileSync(path.join(__dirname,"../components/currency-identity.ts"),"utf8");
+const compiled=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const mod={exports:{}};
+new Function("require","module","exports","crypto",compiled)(require,mod,mod.exports,webcrypto);
+const {verifyCurrency,discoverCurrencies}=mod.exports;
+const program=new PublicKey("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+const token=new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+const collateral=new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+function fixture(){
+ const issued=Keypair.generate().publicKey;
+ const [currency,sb]=PublicKey.findProgramAddressSync([Buffer.from("currency"),issued.toBuffer()],program);
+ const [vault,vb]=PublicKey.findProgramAddressSync([Buffer.from("vault"),currency.toBuffer()],program);
+ const [authority,ab]=PublicKey.findProgramAddressSync([Buffer.from("authority"),currency.toBuffer()],program);
+ const state=Buffer.alloc(172);createHash("sha256").update("account:CurrencyState").digest().copy(state,0,0,8);state[8]=1;
+ [issued,collateral,vault,authority].forEach((k,i)=>k.toBuffer().copy(state,41+i*32));state[169]=sb;state[170]=vb;state[171]=ab;
+ const mint=Buffer.alloc(82);mint.writeUInt32LE(1);authority.toBuffer().copy(mint,4);mint[44]=6;mint[45]=1;mint.writeBigUInt64LE(10n,36);
+ const reserve=Buffer.alloc(165);collateral.toBuffer().copy(reserve);authority.toBuffer().copy(reserve,32);reserve[108]=1;reserve.writeBigUInt64LE(10n,64);
+ const accounts=[{owner:program,data:state},{owner:token,data:mint},{owner:token,data:reserve},{owner:token,data:Buffer.from(mint)}];
+ const connection={getMultipleAccountsInfo:async()=>accounts,getProgramAccounts:async()=>[{pubkey:currency,account:accounts[0]}]};
+ return {issued,currency,accounts,connection};
+}
+test("canonical identity and discovery",async()=>{const f=fixture();assert.equal((await verifyCurrency(f.connection,f.issued)).currency.toBase58(),f.currency.toBase58());assert.equal((await discoverCurrencies(f.connection)).length,1);});
+test("reject spoofed owner, discriminator, bump and vault",async()=>{for(const mutate of [a=>a[0].owner=token,a=>a[0].data[0]^=1,a=>a[0].data[169]^=1,a=>a[2].data[32]^=1]){const f=fixture();mutate(f.accounts);await assert.rejects(verifyCurrency(f.connection,f.issued));assert.equal((await discoverCurrencies(f.connection)).length,0);}});
+test("reject external mint authority and insufficient backing",async()=>{for(const mutate of [a=>a[1].data[4]^=1,a=>a[2].data.writeBigUInt64LE(9n,64)]){const f=fixture();mutate(f.accounts);await assert.rejects(verifyCurrency(f.connection,f.issued));}});
