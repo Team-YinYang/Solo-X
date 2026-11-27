@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { Buffer } from "buffer";
-import { executeBulkTransfers, planBulkTransfers, type TransferResult, type BulkTransport } from "../../../packages/sdk/src/bulk-transfers";
+import { executeBulkTransfers, planBulkTransfers, type TransferResult, type BulkTransport } from "@solo-x/sdk";
 import { parseAmount } from "./amount";
 import { loadAccounts, verifiedConnection } from "./currency-transactions";
 
