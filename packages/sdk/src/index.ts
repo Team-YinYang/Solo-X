@@ -50,3 +50,6 @@ export type {
 
 export { parseSoloXDecimalAmount, simulateSoloXTransaction, SoloXSimulationError } from "./preflight.js";
 export type { SoloXSimulationClient, SoloXSimulationResult } from "./preflight.js";
+
+export { isTransientSoloXRpcError, readSoloXRpcWithRetry, reconcileSoloXConfirmation, SoloXRpcReadError, SoloXSubmissionTracker } from "./rpc-resilience.js";
+export type { SoloXReadOptions, SoloXReadResult, SoloXConfirmationState, SoloXSignatureStatus, SoloXConfirmationClient, SoloXConfirmationResult, SoloXSignedSubmissionClient } from "./rpc-resilience.js";
