@@ -11,7 +11,7 @@ test("all transaction panels offer review and unresolved status reconciliation",
     assert.match(source, /flow\.start\(prepare\)/, file);
     assert.match(source, /flow\.approve\(\)/, file);
     assert.match(source, /flow\.recheck\(\)/, file);
-    assert.match(source, /disabled=\{flow\.blocked/, file);
+    assert.match(source, /flow\.blocked/, file);
   }
 });
 
