@@ -1,9 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Burn, Mint, MintTo, Token, TokenAccount, TransferChecked};
 
-use crate::state::{
-    is_supported_collateral_mint, CurrencyState, AUTHORITY_SEED, CURRENCY_DECIMALS,
-};
+use crate::state::{validate_collateral, CurrencyState, AUTHORITY_SEED, CURRENCY_DECIMALS};
 
 #[derive(Accounts)]
 pub struct ConvertCurrency<'info> {
@@ -120,11 +118,11 @@ pub fn execute(ctx: Context<ConvertCurrency>, amount: u64) -> Result<()> {
         a.destination_vault.key(),
         ConversionError::Identical
     );
-    require!(
-        is_supported_collateral_mint(&a.collateral_mint.key())
-            && a.collateral_mint.decimals == CURRENCY_DECIMALS,
-        ConversionError::Incompatible
-    );
+    validate_collateral(
+        &a.collateral_mint.key(),
+        a.collateral_mint.decimals,
+        &a.token_program.key(),
+    )?;
     validate_side(
         ctx.program_id,
         &a.source,
