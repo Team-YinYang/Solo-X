@@ -1,0 +1,14 @@
+const {test}=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const {evaluateReserveHealth}=require("../components/reserve-health.ts");
+const sample=(x={})=>({supply:100000000n,reserves:100000000n,sampleSlot:500,latestSlot:503,blockTimeSeconds:1000,nowMs:1010000,identityVerified:true,...x});
+test("healthy reserves and fresh RPC",()=>{const h=evaluateReserveHealth(sample());assert.equal(h.status,"healthy");assert.deepEqual(h.warnings,[])});
+test("simulated shortfall is explicit with correct deficit",()=>{const h=evaluateReserveHealth(sample({reserves:60000000n}));assert.equal(h.status,"shortfall");assert.ok(h.warnings.includes("reserve-shortfall"));assert.equal(h.deficit,40000000n)});
+test("stale slot triggers warning",()=>{const h=evaluateReserveHealth(sample({latestSlot:533}));assert.equal(h.status,"stale");assert.ok(h.warnings.includes("rpc-stale"))});
+test("stale timestamp triggers warning",()=>{const h=evaluateReserveHealth(sample({nowMs:1100000}));assert.equal(h.status,"stale");assert.ok(h.warnings.includes("rpc-stale"))});
+test("missing or invalid block time fails closed",()=>{for(const t of [null,2000]){const h=evaluateReserveHealth(sample({blockTimeSeconds:t}));assert.equal(h.status,"unverified");assert.ok(h.warnings.includes("rpc-time-unavailable"))}});
+test("bad slot ordering or identity fails closed",()=>{for(const x of [{latestSlot:400},{identityVerified:false},{sampleSlot:-1}])assert.equal(evaluateReserveHealth(sample(x)).status,"unverified")});
+test("zero issued supply never pretends ratio is 100%",()=>{assert.equal(evaluateReserveHealth(sample({supply:0n})).ratioBasisPoints,null)});
+test("UI uses read-only RPC and no sensitive logging",()=>{const s=fs.readFileSync(path.join(__dirname,"../components/reserve-dashboard.tsx"),"utf8");assert.match(s,/getMultipleAccountsInfoAndContext/);assert.match(s,/getSlot/);assert.match(s,/getBlockTime/);assert.match(s,/Reserve shortfall/);assert.doesNotMatch(s,/sendRawTransaction|signTransaction|console\.(log|warn|error)/)});
