@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, feat/issue-32-sdk-rpc-resilience-orenyi]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
