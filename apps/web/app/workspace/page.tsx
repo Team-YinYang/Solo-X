@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WalletPanel } from "../../components/wallet-panel";
 
 const modules = [
   { name: "Create currency", detail: "Configuration and issuance setup" },
@@ -14,12 +15,13 @@ export default function WorkspacePage() {
         <Link href="/" className="brand">
           <span className="symbol" aria-hidden="true">✳</span> Solo-X
         </Link>
-        <span className="label">Preview · No wallet connection</span>
+        <span className="label">Devnet and local validator only</span>
       </header>
       <section className="workspace">
         <span className="eyebrow">Workspace preview</span>
         <h1>Manage your currencies.</h1>
-        <p className="lede">Foundation scaffold only. Transactions are not enabled.</p>
+        <p className="lede">Connect a test wallet to verify ownership. Protocol transactions remain disabled.</p>
+        <WalletPanel />
         <div className="grid">
           {modules.map(({ name, detail }) => (
             <article className="module" key={name}>
