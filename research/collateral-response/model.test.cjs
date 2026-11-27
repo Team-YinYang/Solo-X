@@ -1,0 +1,10 @@
+const {test}=require("node:test");
+const assert=require("node:assert/strict");
+const {response}=require("./model.cjs");
+const normal={priceBps:10000,priceVerified:true,frozen:false,reserveDeficit:false,chainVerified:true};
+test("normal and exact threshold boundaries",()=>{for(const priceBps of [9900,10000,10100]){const r=response({...normal,priceBps});assert.equal(r.offerMint,true);assert.equal(r.dollarParityGuaranteed,false);}});
+test("depeg in either direction stops new issuance and conversion",()=>{for(const priceBps of [9899,10101,7000]){const r=response({...normal,priceBps});assert.equal(r.offerMint,false);assert.equal(r.offerConversion,false);assert.equal(r.offerRedemption,true);assert.deepEqual(r.reasons,["depeg"]);}});
+test("issuer freeze and reserve deficit independently block redemption",()=>{for(const flag of ["frozen","reserveDeficit"]){const r=response({...normal,[flag]:true});assert.equal(r.offerRedemption,false);assert.equal(r.offerMint,false);assert.equal(r.requiresReview,true);}});
+test("unknown price or chain fails closed",()=>{for(const priceBps of [undefined,NaN,0,-1,10000.5])assert.equal(response({...normal,priceBps}).offerMint,false);assert.equal(response({...normal,priceVerified:false}).offerConversion,false);assert.equal(response({...normal,chainVerified:false}).offerRedemption,false);});
+test("combined incident preserves every reason",()=>{const r=response({...normal,priceBps:8000,frozen:true,reserveDeficit:true});assert.deepEqual(r.reasons,["depeg","issuer-freeze","reserve-deficit"]);assert.equal(r.offerRedemption,false);assert.equal(r.dollarParityGuaranteed,false);});
+test("missing observation is rejected",()=>assert.throws(()=>response({...normal,frozen:undefined}),TypeError));
