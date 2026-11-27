@@ -105,3 +105,7 @@ jobs:
           node-version: '22'
       - name: Test TypeScript workspace validator
         run: node --test .github/scripts/check-ts-workspace.test.cjs
+      - name: Verify documented mainnet restrictions
+        run: |
+          node --test .github/scripts/check-launch-gates.test.cjs
+          node .github/scripts/check-launch-gates.cjs

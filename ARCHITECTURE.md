@@ -22,6 +22,10 @@ Use a configured USDC mint, standard SPL Token and six-decimal currencies. Each 
 ## Security
 Reserve balance must cover outstanding supply. Validate signers, mint addresses, PDA seeds, token program and account relationships. Reject zero amounts, arithmetic errors and unauthorized withdrawals. Test rollback, cross-vault substitution and reserve isolation. Direct burns and donations can create excess reserves. Upgrade authority and collateral issuer remain trust assumptions. No real funds before audit.
 
+See [governance and mainnet launch gates](docs/PRODUCTION_READINESS.md) for
+upgrade custody, incident procedures, independent audit and compliance review.
+**No mainnet launch is authorized by the architecture or passing tests.**
+
 ## Interface
 Next.js, TypeScript, wallet signing and RPC-based reserve dashboard. SDK builds transactions without custody of keys.
 
