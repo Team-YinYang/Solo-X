@@ -114,7 +114,9 @@ git clone https://github.com/Team-YinYang/Solo-X.git
 cd Solo-X
 ```
 
-The Anchor workspace is ready for local development. Follow the [local setup guide](docs/SETUP.md) to install the pinned toolchain, start a validator and run the smoke test. See [ROADMAP.md](ROADMAP.md) for milestones.
+The Anchor workspace is ready for local development. Follow the [local setup guide](docs/SETUP.md) to install the pinned toolchain, start a validator and run the smoke test.
+
+The Next.js/SDK workspaces are scaffolded in `apps/web` and `packages/sdk`. With Node 22 and npm 10, run `npm ci`, `npm run dev`, `npm run lint`, `npm run typecheck`, `npm run build`, and `npm run test`. See [web and SDK setup](docs/WEB_SDK.md). Wallet connections and protocol transactions are not implemented in this foundation preview. See [ROADMAP.md](ROADMAP.md) for milestones.
 
 ## Proposed technology stack
 

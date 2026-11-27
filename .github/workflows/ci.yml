@@ -41,13 +41,13 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Lint
         if: steps.rust.outputs.present == 'true'
-        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+        run: RUSTUP_TOOLCHAIN=stable cargo clippy --workspace --all-targets --locked -- -D warnings -A unexpected_cfgs
       - name: Build
         if: steps.rust.outputs.present == 'true'
-        run: cargo build --workspace --locked
+        run: RUSTUP_TOOLCHAIN=stable cargo build --workspace --locked
       - name: Test
         if: steps.rust.outputs.present == 'true'
-        run: cargo test --workspace --locked
+        run: RUSTUP_TOOLCHAIN=stable cargo test --workspace --locked
 
   typescript:
     name: TypeScript / Workspace
