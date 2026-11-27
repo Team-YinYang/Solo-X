@@ -44,6 +44,13 @@ jobs:
           cat programs/solo_x/src/lib.rs
           echo FORMATTED_LIB_END
           cargo fmt --all -- --check
+      - name: Diagnostic regenerate lockfile
+        if: steps.rust.outputs.present == 'true'
+        run: |
+          RUSTUP_TOOLCHAIN=stable cargo generate-lockfile
+          echo CARGO_LOCK_BEGIN
+          cat Cargo.lock
+          echo CARGO_LOCK_END
       - name: Lint
         if: steps.rust.outputs.present == 'true'
         run: RUSTUP_TOOLCHAIN=stable cargo clippy --workspace --all-targets --locked -- -D warnings -A unexpected_cfgs
