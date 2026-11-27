@@ -1,10 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
     <main className="shell">
       <header className="header">
         <Link href="/" className="brand" aria-label="Solo-X home">
+          <Image className="brand-logo" src="/solo-x-logo.png" alt="" width={42} height={42} priority />
           <span className="symbol" aria-hidden="true">✳</span> Solo-X
         </Link>
         <span className="label">Solana · Devnet MVP</span>
