@@ -4,6 +4,7 @@ import { MintRedeemPanel } from "../../components/mint-redeem-panel";
 import { ConversionTransferPanel } from "../../components/conversion-transfer-panel";
 import { ReserveDashboard } from "../../components/reserve-dashboard";
 import { WalletPanel } from "../../components/wallet-panel";
+import { OrdinaryTokenPanel } from "../../components/ordinary-token-panel";
 
 const modules = [
   { name: "Manage reserves", detail: "Collateral and supply overview" },
@@ -25,6 +26,7 @@ export default function WorkspacePage() {
         <p className="lede">Connect a test wallet to verify ownership. Mint and redeem using test funds only.</p>
         <WalletPanel />
         <CreateCurrencyPanel />
+        <OrdinaryTokenPanel />
         <MintRedeemPanel />
         <ConversionTransferPanel />
         <ReserveDashboard />

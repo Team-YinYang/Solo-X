@@ -41,6 +41,14 @@ test("workspace includes conversion, transfer, and RPC reserve transparency tool
   assert.match(dashboard, /Mint in explorer/);
 });
 
+test("ordinary token creation remains separate from backed Solo-X flows", () => {
+  const workspace = fs.readFileSync(path.join(app, "app/workspace/page.tsx"), "utf8");
+  const source = fs.readFileSync(path.join(app, "components/ordinary-token-panel.tsx"), "utf8");
+  assert.match(workspace, /OrdinaryTokenPanel/);
+  assert.match(source, /not backed, redeemable, or convertible/);
+  assert.match(source, /never creates a Solo-X currency state or collateral vault/);
+});
+
 test("environment example contains only public devnet configuration", () => {
   const env = fs.readFileSync(path.join(root, ".env.example"), "utf8");
   assert.match(env, /NEXT_PUBLIC_SOLANA_NETWORK=devnet/);
