@@ -33,7 +33,7 @@ import { createSoloXRpcConfig } from "@solo-x/sdk";
 const { endpoint, commitment } = createSoloXRpcConfig("devnet");
 ```
 
-The current SDK offers type-safe localnet/devnet RPC configuration only. It does not connect wallets, build protocol transactions, hold keys or support mainnet. Those features are reserved for subsequent issues following `ARCHITECTURE.md`.
+The SDK offers localnet/devnet RPC configuration, typed unsigned create/mint/redeem/convert instruction builders, PDA derivation helpers and defensive currency/reserve readers. See [SDK transaction and reserve usage](SDK_TRANSACTIONS.md). It never holds private keys, signs, or sends transactions; wallet integration stays in the consuming application. It does not support mainnet.
 
 The workspace package directories are `apps/web` and `packages/sdk`. Install from the repository root so npm links the SDK workspace correctly.
 
