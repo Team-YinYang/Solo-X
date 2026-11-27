@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { CreateCurrencyPanel } from "../../components/create-currency-panel";
 import { MintRedeemPanel } from "../../components/mint-redeem-panel";
 import { ConversionTransferPanel } from "../../components/conversion-transfer-panel";
@@ -17,6 +18,7 @@ export default function WorkspacePage() {
     <main className="shell">
       <header className="header">
         <Link href="/" className="brand">
+          <Image className="brand-logo" src="/solo-x-logo.png" alt="" width={42} height={42} priority />
           <span className="symbol" aria-hidden="true">✳</span> Solo-X
         </Link>
         <span className="label">Devnet and local validator only</span>

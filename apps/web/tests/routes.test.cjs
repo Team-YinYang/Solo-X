@@ -9,6 +9,8 @@ test("landing page links to workspace", () => {
   const source = fs.readFileSync(path.join(app, "app/page.tsx"), "utf8");
   assert.match(source, /href="\/workspace"/);
   assert.match(source, /Enter workspace/);
+  assert.match(source, /solo-x-logo\.png/);
+  assert.equal(fs.existsSync(path.join(app, "public", "solo-x-logo.png")), true);
 });
 
 test("workspace includes wallet, creation, and test-only minting panels", () => {
