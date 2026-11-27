@@ -84,6 +84,9 @@ jobs:
       - name: Typecheck
         if: steps.ts.outputs.present == 'true'
         run: npm run typecheck --workspaces --if-present
+      - name: Typecheck Anchor integration tests
+        if: steps.ts.outputs.present == 'true'
+        run: npx tsc --noEmit -p tsconfig.json
       - name: Build
         if: steps.ts.outputs.present == 'true'
         run: npm run build --workspaces --if-present

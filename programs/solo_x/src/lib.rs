@@ -2,6 +2,8 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Burn, Mint, MintTo, Token, TokenAccount, Transfer};
 
 pub mod conversion;
+#[cfg(test)]
+mod security_tests;
 pub mod state;
 
 pub use conversion::*;
