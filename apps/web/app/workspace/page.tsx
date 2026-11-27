@@ -1,10 +1,10 @@
 import Link from "next/link";
+import { MintRedeemPanel } from "../../components/mint-redeem-panel";
 import { WalletPanel } from "../../components/wallet-panel";
 
 const modules = [
   { name: "Create currency", detail: "Configuration and issuance setup" },
   { name: "Manage reserves", detail: "Collateral and supply overview" },
-  { name: "Mint & redeem", detail: "Wallet-authorized operations" },
   { name: "Convert", detail: "Compatible currency conversion" },
 ];
 
@@ -20,8 +20,9 @@ export default function WorkspacePage() {
       <section className="workspace">
         <span className="eyebrow">Workspace preview</span>
         <h1>Manage your currencies.</h1>
-        <p className="lede">Connect a test wallet to verify ownership. Protocol transactions remain disabled.</p>
+        <p className="lede">Connect a test wallet to verify ownership. Mint and redeem using test funds only.</p>
         <WalletPanel />
+        <MintRedeemPanel />
         <div className="grid">
           {modules.map(({ name, detail }) => (
             <article className="module" key={name}>
