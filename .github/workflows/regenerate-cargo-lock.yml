@@ -1,7 +1,8 @@
 name: Regenerate Cargo lockfile
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [feat/issue-6-collateral-minting]
 
 permissions:
   contents: write
