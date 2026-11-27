@@ -75,7 +75,7 @@ fn validate_side(
     Ok(())
 }
 
-fn check_amounts(
+pub(crate) fn check_amounts(
     amount: u64,
     source_supply: u64,
     source_reserve: u64,

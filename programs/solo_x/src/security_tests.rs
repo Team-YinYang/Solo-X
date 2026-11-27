@@ -299,3 +299,129 @@ fn failed_operations_and_overflows_leave_both_ledgers_unchanged() {
     assert!(!ledger.redeem(1, 0));
     assert_eq!(ledger, original);
 }
+
+/// Deterministic xorshift generator: no new dependency or platform entropy.
+fn next_random(state: &mut u64) -> u64 {
+    *state ^= *state << 13;
+    *state ^= *state >> 7;
+    *state ^= *state << 17;
+    *state
+}
+
+#[test]
+fn seeded_accounting_sequences_preserve_invariants() {
+    for seed in [1_u64, 22, 33, 0xdead_beef, u64::MAX] {
+        let mut random = seed;
+        let mut ledgers = [Ledger {
+            supply: 0,
+            reserve: 0,
+        }; 3];
+        let mut wallet = 10_000_u64;
+        let mut successes = [0; 4];
+        let mut failures = [0; 4];
+        for step in 0..4096 {
+            let op = (next_random(&mut random) % 4) as usize;
+            let index = (next_random(&mut random) % 3) as usize;
+            let other = (index + 1) % 3;
+            let amount = match next_random(&mut random) % 8 {
+                0 => 0,
+                1 => u64::MAX,
+                _ => next_random(&mut random) % 101 + 1,
+            };
+            let before = ledgers;
+            let wallet_before = wallet;
+            let a = before[index];
+            let b = before[other];
+            let mut expected = before;
+            let mut expected_wallet = wallet;
+            // Independent bounded oracle for the bounded wallet model.
+            let valid = amount > 0
+                && match op {
+                    0 | 2 => amount <= wallet,
+                    1 | 3 => amount <= a.supply,
+                    _ => unreachable!(),
+                };
+            if valid {
+                match op {
+                    0 => {
+                        expected[index].supply += amount;
+                        expected[index].reserve += amount;
+                        expected_wallet -= amount;
+                    }
+                    1 => {
+                        expected[index].supply -= amount;
+                        expected[index].reserve -= amount;
+                        expected_wallet += amount;
+                    }
+                    2 => {
+                        expected[index].reserve += amount;
+                        expected_wallet -= amount;
+                    }
+                    3 => {
+                        expected[index].supply -= amount;
+                        expected[index].reserve -= amount;
+                        expected[other].supply += amount;
+                        expected[other].reserve += amount;
+                    }
+                    _ => unreachable!(),
+                }
+            }
+            let accepted = match op {
+                0 if amount <= wallet => {
+                    let ok = crate::check_mint(amount, a.supply, a.reserve).is_ok();
+                    if ok {
+                        ledgers[index].supply += amount;
+                        ledgers[index].reserve += amount;
+                        wallet -= amount;
+                    }
+                    ok
+                }
+                1 => {
+                    let ok = crate::check_redemption(amount, a.supply, a.supply, a.reserve).is_ok();
+                    if ok {
+                        ledgers[index].supply -= amount;
+                        ledgers[index].reserve -= amount;
+                        wallet += amount;
+                    }
+                    ok
+                }
+                2 if amount > 0 && amount <= wallet => {
+                    ledgers[index].reserve += amount;
+                    wallet -= amount;
+                    true
+                }
+                3 => {
+                    let ok = crate::conversion::check_amounts(
+                        amount, a.supply, a.reserve, b.supply, b.reserve, a.supply,
+                    )
+                    .is_ok();
+                    if ok {
+                        ledgers[index].supply -= amount;
+                        ledgers[index].reserve -= amount;
+                        ledgers[other].supply += amount;
+                        ledgers[other].reserve += amount;
+                    }
+                    ok
+                }
+                _ => false,
+            };
+            assert_eq!(accepted, valid, "seed={seed} step={step} op={op}");
+            assert_eq!(ledgers, expected, "seed={seed} step={step}");
+            assert_eq!(wallet, expected_wallet, "seed={seed} step={step}");
+            assert!(ledgers.iter().all(|ledger| ledger.solvent()));
+            assert_eq!(
+                u128::from(wallet) + ledgers.iter().map(|l| u128::from(l.reserve)).sum::<u128>(),
+                10_000
+            );
+            if accepted {
+                successes[op] += 1;
+            } else {
+                failures[op] += 1;
+                assert_eq!(ledgers, before);
+                assert_eq!(wallet, wallet_before);
+            }
+        }
+        assert!(successes.iter().all(|&count| count > 0), "seed={seed}");
+        assert!(failures.iter().all(|&count| count > 0), "seed={seed}");
+    }
+}
