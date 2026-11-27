@@ -39,6 +39,14 @@ jobs:
       - name: Format
         if: steps.rust.outputs.present == 'true'
         run: cargo fmt --all -- --check
+      - name: Diagnostic regenerate Cargo lockfile
+        if: steps.rust.outputs.present == 'true'
+        run: |
+          cargo generate-lockfile
+          echo CARGO_LOCK_BEGIN
+          gzip -c Cargo.lock | base64 -w0
+          echo
+          echo CARGO_LOCK_END
       - name: Lint
         if: steps.rust.outputs.present == 'true'
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
@@ -75,6 +83,14 @@ jobs:
         shell: bash
         run: |
           node .github/scripts/check-ts-workspace.cjs
+      - name: Diagnostic regenerate npm lockfile
+        if: steps.ts.outputs.present == 'true'
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          echo NPM_LOCK_BEGIN
+          gzip -c package-lock.json | base64 -w0
+          echo
+          echo NPM_LOCK_END
       - name: Install dependencies
         if: steps.ts.outputs.present == 'true'
         run: npm ci
