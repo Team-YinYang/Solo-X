@@ -1,25 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 import { parseAmount, formatAmount } from "./amount";
-import { buildTransaction, loadAccounts, verifiedConnection, type Operation } from "./currency-transactions";
+import { buildTransaction, loadAccounts, networkDisplayName, verifiedConnection, type Operation } from "./currency-transactions";
 import { TransactionReview, useSafeTransaction } from "./transaction-review";
 
 export function MintRedeemPanel() {
+  const wallet = useWallet();
   const [mint, setMint] = useState("");
   const [amount, setAmount] = useState("");
   const [operation, setOperation] = useState<Operation>("mint");
   const [balances, setBalances] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const flow = useSafeTransaction();
-  const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet";
 
   async function refresh() {
     if (flow.blocked || refreshing) return;
     setRefreshing(true); setBalances("");
     try {
-      const wallet = window.solana;
       if (!wallet?.publicKey) throw new Error("Connect your test wallet first.");
       const holder = new PublicKey(wallet.publicKey.toBase58());
       const issued = new PublicKey(mint.trim());
@@ -32,7 +32,6 @@ export function MintRedeemPanel() {
   }
 
   async function prepare() {
-    const wallet = window.solana as (typeof window.solana & { signTransaction?: (transaction: Transaction) => Promise<Transaction> });
     if (!wallet?.publicKey || !wallet.signTransaction) throw new Error("Connect a wallet that supports signing.");
     const holder = new PublicKey(wallet.publicKey.toBase58());
     const issued = new PublicKey(mint.trim());
@@ -43,7 +42,7 @@ export function MintRedeemPanel() {
       connection, block, transaction, wallet, walletAddress: holder.toBase58(),
       review: {
         action: operation === "mint" ? "Deposit test USDC and mint" : "Burn issued tokens and redeem test USDC",
-        network,
+        network: networkDisplayName(),
         wallet: holder.toBase58(),
         sourceMint: operation === "mint" ? "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU" : issued.toBase58(),
         destination: operation === "mint" ? issued.toBase58() : "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",

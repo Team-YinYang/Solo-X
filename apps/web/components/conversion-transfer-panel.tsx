@@ -1,29 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { Buffer } from "buffer";
 import { parseAmount } from "./amount";
-import { loadAccounts, verifiedConnection } from "./currency-transactions";
+import { loadAccounts, networkDisplayName, verifiedConnection } from "./currency-transactions";
 import { TransactionReview, useSafeTransaction } from "./transaction-review";
 
 const PROGRAM = new PublicKey("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 const TOKEN = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 type Mode = "convert" | "transfer";
-type SigningWallet = { publicKey?: { toBase58: () => string }; signTransaction?: (transaction: Transaction) => Promise<Transaction> };
 function u64(value: bigint) { const data = Buffer.alloc(8); data.writeBigUInt64LE(value); return data; }
 function anchorData(discriminator: readonly number[], amount: bigint) { return Buffer.concat([Buffer.from(discriminator), u64(amount)]); }
 
 export function ConversionTransferPanel() {
+  const wallet = useWallet();
   const [mode, setMode] = useState<Mode>("convert");
   const [sourceMint, setSourceMint] = useState("");
   const [destination, setDestination] = useState("");
   const [amount, setAmount] = useState("");
   const flow = useSafeTransaction();
-  const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK ?? "devnet";
 
   async function prepare() {
-    const wallet = window.solana as SigningWallet | undefined;
     if (!wallet?.publicKey || !wallet.signTransaction) throw new Error("Connect a wallet that supports transaction signing first.");
     const holder = new PublicKey(wallet.publicKey.toBase58());
     const source = new PublicKey(sourceMint.trim());
@@ -71,7 +70,7 @@ export function ConversionTransferPanel() {
       connection, block, transaction, wallet, walletAddress: holder.toBase58(),
       review: {
         action: mode === "convert" ? "Convert compatible currency" : "Transfer issued tokens",
-        network, wallet: holder.toBase58(), sourceMint: source.toBase58(),
+        network: networkDisplayName(), wallet: holder.toBase58(), sourceMint: source.toBase58(),
         destination: target.toBase58(), amount: amount + " tokens (six decimals)",
         details: "Source token account: " + sourceAccounts.issuedAccount.key.toBase58() + ". Test funds only.",
       },

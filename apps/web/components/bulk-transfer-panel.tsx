@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { Buffer } from "buffer";
 import { executeBulkTransfers, planBulkTransfers, type TransferResult, type BulkTransport } from "@solo-x/sdk";
@@ -11,6 +12,7 @@ const STORAGE = "solo-x-bulk-v1";
 type Saved = { scope: string; entries: Array<Omit<TransferResult,"row"> & {row: {id:string; recipient:string; amount:string}}> };
 
 export function BulkTransferPanel() {
+  const wallet = useWallet();
   const [mint,setMint] = useState("");
   const [input,setInput] = useState("");
   const [results,setResults] = useState<TransferResult[]>([]);
@@ -23,7 +25,6 @@ export function BulkTransferPanel() {
     try {
       if (!navigator.locks) throw new Error("Browser must support exclusive Web Locks for safe retries.");
       await navigator.locks.request(STORAGE, async () => {
-        const wallet = window.solana as (typeof window.solana & {signTransaction?: (tx:Transaction)=>Promise<Transaction>});
         if (!wallet?.publicKey || !wallet.signTransaction) throw new Error("Connect a signing wallet first.");
         const holder = new PublicKey(wallet.publicKey.toBase58());
         const issued = new PublicKey(mint.trim());
